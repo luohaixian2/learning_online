@@ -1,0 +1,234 @@
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../static/css/uikit.min.css">
+<link rel="stylesheet" href="../static/css/uikit.gradient.min.css">
+<link rel="stylesheet" href="../static/css/my.css">
+<script src="../static/js/jquery.min.js"></script>
+<script src="../static/js/sha1.min.js"></script>
+<script src="../static/js/uikit.min.js"></script>
+<script src="../static/js/sticky.min.js"></script>
+<script src="../static/js/vue.min.js"></script>
+</head>
+<style type="text/css">
+.ul2_class {
+        margin:0px;
+        padding:0px;
+	background-color:#DDDDDD     
+}
+
+.ul2_class li {
+        line-height:35px;
+        text-align:left;
+        list-style-type:none;
+        font-size:13px;
+}
+
+.ul2_class li:hover {
+        color:green;
+}
+</style>
+<body>
+	<div style="margin:50px">
+	  <div style="margin-bottom:30px">
+		<ul class="font_title uk-tab" data-uk-tab="" 
+		data-uk-switcher="{connect:'#subnav-pill-content-1'}">
+                                    <li aria-expanded="true" class="uk-active"><a href="#">全部</a></li>
+                                    <li aria-expanded="false" class=""><a href="#">IT互联网</a></li>
+                                    <li class="" aria-expanded="false"><a href="#">职场技能</a></li>
+                                    <li class="" aria-expanded="false"><a href="#">语言学习</a></li>
+                                    <li class="" aria-expanded="false"><a href="#">兴趣爱好</a></li>
+                                    <li class="" aria-expanded="false"><a href="#">更多分类</a></li>
+		</ul>
+
+		<ul id="subnav-pill-content-1" class="uk-switcher" style="padding:20px;margin-top:-5px;border:1px solid #DDDDDD;
+		border-top:none">
+                                <li class="" aria-hidden="true">请选择相关分类</li>
+                                <li aria-hidden="true" class="">
+					<ul class="uk-breadcrumb">
+    						<li><a href="">全部</a></li>
+    						<li><a href="" class="uk-active">编程语言</a></li>
+    						<li><a href="">移动开发</a></li>
+    						<li><a href="">Web开发</a></li>
+    						<li><a href="">设计制作</a></li>
+    						<li><a href="">网络营销</a></li>
+    						<li><a href="">数据库</a></li>
+    						<li><a href="">产品策划</a></li>
+    						<li><a href="">产品运营</a></li>
+    						<li><a href="">操作系统</a></li>
+    						<li><a href="">软件测试</a></li>
+    						<li><a href="">网络技术</a></li>
+    						<li><a href="">硬件开发</a></li>
+    						<li><a href="">其它</a></li>
+					</ul>
+				</li>
+                                <li aria-hidden="true" class="">
+					<ul class="uk-breadcrumb">
+    						<li><a href="">全部</a></li>
+    						<li><a href="" class="uk-active">办公技能</a></li>
+    						<li><a href="">求职应聘</a></li>
+    						<li><a href="">职业考试</a></li>
+    						<li><a href="">营销推广</a></li>
+    						<li><a href="">财税投资</a></li>
+    						<li><a href="">人力资源</a></li>
+    						<li><a href="">商务礼仪</a></li>
+    						<li><a href="">谈判沟通</a></li>
+    						<li><a href="">职业规划</a></li>
+    						<li><a href="">管理能力</a></li>
+    						<li><a href="">其它</a></li>
+					</ul>
+				</li>
+                                <li class="" aria-hidden="true">Hello again!</li>
+                                <li class="uk-active" aria-hidden="false">Bazinga!</li>
+                </ul>
+	  </div>
+	<!--这里还要提供一些排序方式-->
+	<div class="uk-grid">	
+		<div class="uk-width-3-4">
+			<div class="uk-grid uk-grid-medium" style="margin-left:0px;">
+                        	<a class="uk-thumbnail uk-width-1-4" href="/detail_lesson">
+                                <img src="../static/src/test.png" alt="">
+                                <div class="uk-thumbnail-caption" style="text-align:left">
+                                	<div class="font_desc">Execl的表格之道</div>
+                                	<div class="font_author">向前</div>
+					<div class="font_author"><i class="uk-icon-user"></i> 23</div>
+                                	<div class="font_price">￥免费</div>
+                                </div>
+                       		</a>
+                        	<a class="uk-thumbnail uk-width-1-4" href="">
+                                <img src="../static/src/test.png" alt="">
+                                <div class="uk-thumbnail-caption" style="text-align:left">
+                                	<div class="font_desc">Execl的表格之道</div>
+                                	<div class="font_author">向前</div>
+					<div class="font_author"><i class="uk-icon-user"></i> 23</div>
+                                	<div class="font_price">￥免费</div>
+                                </div>
+                       		</a>
+                        	<a class="uk-thumbnail uk-width-1-4" href="">
+                                <img src="../static/src/test.png" alt="">
+                                <div class="uk-thumbnail-caption" style="text-align:left">
+                                	<div class="font_desc">Execl的表格之道</div>
+                                	<div class="font_author">向前</div>
+					<div class="font_author"><i class="uk-icon-user"></i> 23</div>
+                                	<div class="font_price">￥免费</div>
+                                </div>
+                       		</a>
+                        	<a class="uk-thumbnail uk-width-1-4" href="">
+                                <img src="../static/src/test.png" alt="">
+                                <div class="uk-thumbnail-caption" style="text-align:left">
+                                	<div class="font_desc">Execl的表格之道</div>
+                                	<div class="font_author">向前</div>
+					<div class="font_author"><i class="uk-icon-user"></i> 23</div>
+                                	<div class="font_price">￥免费</div>
+                                </div>
+                       		</a>
+                        	<a class="uk-thumbnail uk-width-1-4" href="">
+                                <img src="../static/src/test.png" alt="">
+                                <div class="uk-thumbnail-caption" style="text-align:left">
+                                	<div class="font_desc">Execl的表格之道</div>
+                                	<div class="font_author">向前</div>
+					<div class="font_author"><i class="uk-icon-user"></i> 23</div>
+                                	<div class="font_price">￥免费</div>
+                                </div>
+                       		</a>
+                        	<a class="uk-thumbnail uk-width-1-4" href="">
+                                <img src="../static/src/test.png" alt="">
+                                <div class="uk-thumbnail-caption" style="text-align:left">
+                                	<div class="font_desc">Execl的表格之道</div>
+                                	<div class="font_author">向前</div>
+					<div class="font_author"><i class="uk-icon-user"></i> 23</div>
+                                	<div class="font_price">￥免费</div>
+                                </div>
+                       		</a>
+                        	<a class="uk-thumbnail uk-width-1-4" href="">
+                                <img src="../static/src/test.png" alt="">
+                                <div class="uk-thumbnail-caption" style="text-align:left">
+                                	<div class="font_desc">Execl的表格之道</div>
+                                	<div class="font_author">向前</div>
+					<div class="font_author"><i class="uk-icon-user"></i> 23</div>
+                                	<div class="font_price">￥免费</div>
+                                </div>
+                       		</a>
+                        	<a class="uk-thumbnail uk-width-1-4" href="">
+                                <img src="../static/src/test.png" alt="">
+                                <div class="uk-thumbnail-caption" style="text-align:left">
+                                	<div class="font_desc">Execl的表格之道</div>
+                                	<div class="font_author">向前</div>
+					<div class="font_author"><i class="uk-icon-user"></i> 23</div>
+                                	<div class="font_price">￥免费</div>
+                                </div>
+                       		</a>
+                        	<a class="uk-thumbnail uk-width-1-4" href="">
+                                <img src="../static/src/test.png" alt="">
+                                <div class="uk-thumbnail-caption" style="text-align:left">
+                                	<div class="font_desc">Execl的表格之道</div>
+                                	<div class="font_author">向前</div>
+					<div class="font_author"><i class="uk-icon-user"></i> 23</div>
+                                	<div class="font_price">￥免费</div>
+                                </div>
+                       		</a>
+                        	<a class="uk-thumbnail uk-width-1-4" href="">
+                                <img src="../static/src/test.png" alt="">
+                                <div class="uk-thumbnail-caption" style="text-align:left">
+                                	<div class="font_desc">Execl的表格之道</div>
+                                	<div class="font_author">向前</div>
+					<div class="font_author"><i class="uk-icon-user"></i> 23</div>
+                                	<div class="font_price">￥免费</div>
+                                </div>
+                       		</a>
+                        	<a class="uk-thumbnail uk-width-1-4" href="">
+                                <img src="../static/src/test.png" alt="">
+                                <div class="uk-thumbnail-caption" style="text-align:left">
+                                	<div class="font_desc">Execl的表格之道</div>
+                                	<div class="font_author">向前</div>
+					<div class="font_author"><i class="uk-icon-user"></i> 23</div>
+                                	<div class="font_price">￥免费</div>
+                                </div>
+                       		</a>
+                        	<a class="uk-thumbnail uk-width-1-4" href="">
+                                <img src="../static/src/test.png" alt="">
+                                <div class="uk-thumbnail-caption" style="text-align:left">
+                                	<div class="font_desc">Execl的表格之道</div>
+                                	<div class="font_author">向前</div>
+					<div class="font_author"><i class="uk-icon-user"></i> 23</div>
+                                	<div class="font_price">￥免费</div>
+                                </div>
+                       		</a>
+                	</div>
+		</div>
+		
+		<div class="uk-width-1-4">
+			<div>
+				<h3>系列课程</h3>
+				<ul class="ul2_class">
+					<li>五步拿下名企offer</li>
+					<li>学office办公技能</li>
+					<li>手把手教你理财</li>
+					<li>最热门的Execl入门教程</li>
+					<li>更多<i class="uk-icon-chevron-right"></i></li>
+				</ul>
+			<div>
+			<div style="margin-top:40px">
+				<ul class="uk-breadcrumb">
+					<li class="uk-active"><a href="">付费排行</a></li>
+					<li><a href="">免费排行</a></li>
+				</ul>
+				<ul class="ul2_class">
+					<li>五步拿下名企offer</li>
+					<li>五步拿下名企offer</li>
+					<li>五步拿下名企offer</li>
+					<li>学office办公技能</li>
+					<li>手把手教你理财</li>
+					<li>学office办公技能</li>
+					<li>手把手教你理财</li>
+					<li>学office办公技能</li>
+					<li>手把手教你理财</li>
+					<li>最热门的Execl入门教程</li>
+					<li>更多<i class="uk-icon-chevron-right"></i></li>
+				</ul>
+			<div>
+		</div>
+	</div>
+    </div>
+</body>
+</html>
