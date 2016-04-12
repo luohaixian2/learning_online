@@ -1,0 +1,76 @@
+/*
+ * custom css
+ */
+/*
+a:hover, a:active {
+    text-decoration: none;
+}
+
+#vm {
+    display: none;
+}
+#loading {
+    margin-bottom: 15px;
+}
+#error {
+    display: none;
+    margin-bottom: 15px;
+}*/
+.title_font{
+	font-size: 25px;
+}
+
+.margin_right_small{
+	margin-right:10px;
+}
+
+.input_style{
+	width:200px;
+	height:30px;
+}
+
+.login{
+	display:none
+}
+
+.font_desc{
+	font-size:15px;
+}
+
+.font_author {
+	font-size:10px;
+}
+
+.font_price {
+	font-size:12px;
+	color:red;
+}
+
+.font_title {
+	font-size:20px;
+	margin-bottom:5px;
+}
+
+.ul_class {
+        margin:0px;
+        padding:0px
+}
+
+.ul_class li {
+        background-color:white;
+        line-height:50px;
+        text-align:center;
+        list-style-type:none;
+        font-size:20px;
+        border-bottom:1px solid black;
+}
+
+.ul_class li:hover {
+        background-color:green;
+        color:white;
+}
+
+.test_board {
+	border:1px solid black;
+}
+
