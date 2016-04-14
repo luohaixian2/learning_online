@@ -9,6 +9,20 @@
 <script src="../static/js/uikit.min.js"></script>
 <script src="../static/js/sticky.min.js"></script>
 <script src="../static/js/vue.min.js"></script>
+<script src="../static/js/my.js"></script>
+<script>
+$(function(){
+	var vm = new Vue({
+		el: '#vm',
+		data: {
+		
+		},
+		methods: {
+		
+		}
+	});
+})	
+</script>
 <style type="text/css">
 .ul3_class {
         margin:0px;
@@ -29,16 +43,16 @@
 
 </head>
 <body>
-	<div style="margin:50px">
+	<div id="vm" style="margin:50px">
 		<div class="uk-grid" data-uk-grid-match="{row: false}" style="border:1px solid #DDDDDD">
 			<div class="uk-width-1-2">
-				<img class="uk-width-1-1" src="../static/src/test.png">
+				<img class="uk-width-1-1" src={{video.pic_path}}>
 			</div>
 			<div class="uk-width-1-2">
-				<div class="">手把手教你玩转PS</div>
-				<div class=""><i class="uk-icon-user"></i> 234</div>
-				<div class="">讲师：author</div>
-				<div class="">免费</div>
+				<div class="">{{video.name}}</div>
+				<div class=""><i class="uk-icon-user"></i> {{video.people_num}}</div>
+				<div class="">{{video.user_id}}</div>
+				<div class="">${{video.price}}</div>
 				<div class="">
 					<button class="uk-button-primary">立即参加</button>
 				</div>
@@ -48,7 +62,7 @@
 		<div align:"left" style="border:1px solid #DDDDDD;margin-top:30px;margin-bottom:30px;line-height:100px">
 			<span>完成进度:30%</span>
 			<span  style="float:right;text-align-center">
-				<a href="/video">开始学习</a>
+				<a href="/video/{{video.id}}">开始学习</a>
 			</span>
 		</div>
 

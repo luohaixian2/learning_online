@@ -9,10 +9,39 @@
 <script src="../static/js/uikit.min.js"></script>
 <script src="../static/js/sticky.min.js"></script>
 <script src="../static/js/vue.min.js"></script>
+<script src="../static/js/my.js"></script>
+<script>
+function initVM(data) {
+    var vm = new Vue({
+        el: '#vm',
+        data: {
+            free_videos: data.free_videos,
+            it_videos: data.it_videos,
+            work_skill_videos: data.work_skill_videos,
+            language_videos: data.language_videos,
+            hobby_videos: data.hobby_videos
+        },
+        methods: {
+       
+        }
+    });
+    $('#vm').show();
+}
+
+$(function() {
+    getJSON('/api/videos',function (err, results) {
+        if (err) {
+            return fatal(err);
+        }
+        initVM(results);
+    });
+});
+
+</script>
 </head>
 <body>
 
-	<div style = "margin:20px">
+	<div id="vm" style = "margin:20px">
 		<div class="uk-grid" style="margin-top:50px;margin-bottom:50px">
 			<div class="uk-width-3-4">
 				<div class="title_font"><a target="_blank" href="#"><i class="uk-icon-book"></i>网上云课堂</a></div>
@@ -62,39 +91,15 @@
 	<div style="margin-top:30px;margin-left:0px">
 		<div align="left">
 			<span class="font_title">免费好课</span>
-			<span style="float:right"><a>更多<i class="uk-icon-chevron-right"></i></a></span>
+			<span style="float:right"><a href="/lesson">更多<i class="uk-icon-chevron-right"></i></a></span>
 		</div>
 		<div class="uk-grid" style="margin-left:0px">	
-			<a class="uk-thumbnail uk-width-1-4" href="">
-                        	<img src="../static/src/test.png" alt="">
+			<a class="uk-thumbnail uk-width-1-4" v-repeat="free_video: free_videos" v-attr="href: '/detail_lesson/'+free_video.id">
+				<img v-attr="src: '' + free_video.pic_path" />
                         	<div class="uk-thumbnail-caption" style="text-align:left">
-                                	<div class="font_desc">Execl的表格之道</div>
-                                	<div class="font_author">向前</div>
-					<div class="font_price">￥免费</div>
-                       		</div>
-                	</a>
-			<a class="uk-thumbnail uk-width-1-4" href="">
-                        	<img src="../static/src/test.png" alt="">
-                        	<div class="uk-thumbnail-caption" style="text-align:left">
-                                	<div class="font_desc">Execl的表格之道</div>
-                                	<div class="font_author">向前</div>
-					<div class="font_price">￥免费</div>
-                       		</div>
-                	</a>
-			<a class="uk-thumbnail uk-width-1-4" href="">
-                        	<img src="../static/src/test.png" alt="">
-                        	<div class="uk-thumbnail-caption" style="text-align:left">
-                                	<div class="font_desc">Execl的表格之道</div>
-                                	<div class="font_author">向前</div>
-					<div class="font_price">￥免费</div>
-                       		</div>
-                	</a>
-			<a class="uk-thumbnail uk-width-1-4" href="">
-                        	<img src="../static/src/test.png" alt="">
-                        	<div class="uk-thumbnail-caption" style="text-align:left">
-                                	<div class="font_desc">Execl的表格之道</div>
-                                	<div class="font_author">向前</div>
-					<div class="font_price">￥免费</div>
+                                	<div class="font_desc" v-text=free_video.name></div>
+                                	<div class="font_author" v-text=free_video.user_id></div>
+					<div class="font_price" v-text=free_video.price></div>
                        		</div>
                 	</a>
 		</div>
@@ -103,44 +108,20 @@
 		<div align="left">
 			<span class="font_title">IT互联网</span>
 			<span style="float:right">
-				<a href="">Web开发</a>
-				<a href="">产品设计</a>
-				<a href="">编程语言</a>
-				<a href="">产品经理</a>
-				<a>更多<i class="uk-icon-chevron-right"></i></a>
+				<a href="/lesson/IT互联网,Web开发">Web开发</a>
+				<a href="/lesson">产品设计</a>
+				<a href="/lesson">编程语言</a>
+				<a href="/lesson">产品经理</a>
+				<a href="/lesson">更多<i class="uk-icon-chevron-right"></i></a>
 			</span>
 		</div>
 		<div class="uk-grid" style="margin-left:0px">	
-			<a class="uk-thumbnail uk-width-1-4" href="">
-                        	<img src="../static/src/test.png" alt="">
+			<a class="uk-thumbnail uk-width-1-4" v-repeat="it_video: it_videos" v-attr="href: '/detail_lesson/'+it_video.id">
+				<img v-attr="src: '' + it_video.pic_path" />
                         	<div class="uk-thumbnail-caption" style="text-align:left">
-                                	<div class="font_desc">Execl的表格之道</div>
-                                	<div class="font_author">向前</div>
-					<div class="font_price">￥免费</div>
-                       		</div>
-                	</a>
-			<a class="uk-thumbnail uk-width-1-4" href="">
-                        	<img src="../static/src/test.png" alt="">
-                        	<div class="uk-thumbnail-caption" style="text-align:left">
-                                	<div class="font_desc">Execl的表格之道</div>
-                                	<div class="font_author">向前</div>
-					<div class="font_price">￥免费</div>
-                       		</div>
-                	</a>
-			<a class="uk-thumbnail uk-width-1-4" href="">
-                        	<img src="../static/src/test.png" alt="">
-                        	<div class="uk-thumbnail-caption" style="text-align:left">
-                                	<div class="font_desc">Execl的表格之道</div>
-                                	<div class="font_author">向前</div>
-					<div class="font_price">￥免费</div>
-                       		</div>
-                	</a>
-			<a class="uk-thumbnail uk-width-1-4" href="">
-                        	<img src="../static/src/test.png" alt="">
-                        	<div class="uk-thumbnail-caption" style="text-align:left">
-                                	<div class="font_desc">Execl的表格之道</div>
-                                	<div class="font_author">向前</div>
-					<div class="font_price">￥免费</div>
+                                	<div class="font_desc" v-text=it_video.name></div>
+                                	<div class="font_author" v-text=it_video.user_id></div>
+					<div class="font_price" v-text=it_video.price></div>
                        		</div>
                 	</a>
 		</div>
@@ -149,44 +130,64 @@
 		<div align="left">
 			<span class="font_title">职场技能</span>
 			<span style="float:right">
-				<a href="">求职应聘</a>
-                                    <a href="">办公技能</a>
-                                    <a href="">商务礼仪</a>
-                                    <a href="">职业考试</a>
-                                    <a>更多<i class="uk-icon-chevron-right"></i></a>	
+				<a href="/lesson">求职应聘</a>
+                                    <a href="/lesson">办公技能</a>
+                                    <a href="/lesson">商务礼仪</a>
+                                    <a href="/lesson">职业考试</a>
+                                    <a href="/lesson">更多<i class="uk-icon-chevron-right"></i></a>	
 			</span>
 		</div>
 		<div class="uk-grid" style="margin-left:0px">	
-			<a class="uk-thumbnail uk-width-1-4" href="">
-                        	<img src="../static/src/test.png" alt="">
+			<a class="uk-thumbnail uk-width-1-4" v-repeat="work_skill_video: work_skill_videos" v-attr="href: '/detail_lesson/'+work_skill_video.id">
+				<img v-attr="src: '' + work_skill_video.pic_path" />
                         	<div class="uk-thumbnail-caption" style="text-align:left">
-                                	<div class="font_desc">Execl的表格之道</div>
-                                	<div class="font_author">向前</div>
-					<div class="font_price">￥免费</div>
+                                	<div class="font_desc" v-text=work_skill_video.name></div>
+                                	<div class="font_author" v-text=work_skill_video.user_id></div>
+					<div class="font_price" v-text=work_skill_video.price></div>
                        		</div>
                 	</a>
-			<a class="uk-thumbnail uk-width-1-4" href="">
-                        	<img src="../static/src/test.png" alt="">
+		</div>
+	</div>
+	<div style="margin-top:30px;margin-left:0px">
+		<div align="left">
+			<span class="font_title">语言学习</span>
+			<span style="float:right">
+				<a href="">日常使用英语</a>
+                                    <a href="/lesson">出国考试英语</a>
+                                    <a href="/lesson">日语</a>
+                                    <a href="/lesson">韩语</a>
+                                    <a href="/lesson">更多<i class="uk-icon-chevron-right"></i></a>	
+			</span>
+		</div>
+		<div class="uk-grid" style="margin-left:0px">	
+			<a class="uk-thumbnail uk-width-1-4" v-repeat="language_video: language_videos" v-attr="href: '/detail_lesson/'+language_video.id">
+				<img v-attr="src: '' + language_video.pic_path" />
                         	<div class="uk-thumbnail-caption" style="text-align:left">
-                                	<div class="font_desc">Execl的表格之道</div>
-                                	<div class="font_author">向前</div>
-					<div class="font_price">￥免费</div>
+                                	<div class="font_desc" v-text=language_video.name></div>
+                                	<div class="font_author" v-text=language_video.user_id></div>
+					<div class="font_price" v-text=language_video.price></div>
                        		</div>
                 	</a>
-			<a class="uk-thumbnail uk-width-1-4" href="">
-                        	<img src="../static/src/test.png" alt="">
+		</div>
+	</div>
+	<div style="margin-top:30px;margin-left:0px">
+		<div align="left">
+			<span class="font_title">兴趣爱好</span>
+			<span style="float:right">
+				<a href="/lesson">摄影摄像</a>
+                                    <a href="/lesson">美食烹饪</a>
+                                    <a href="/lesson">舞蹈瑜伽</a>
+                                    <a href="/lesson">DIY手工</a>
+                                    <a href="/lesson">更多<i class="uk-icon-chevron-right"></i></a>	
+			</span>
+		</div>
+		<div class="uk-grid" style="margin-left:0px">	
+			<a class="uk-thumbnail uk-width-1-4" v-repeat="hobby_video: hobby_videos" v-attr="href: '/detail_lesson/'+hobby_video.id">
+				<img v-attr="src: '' + hobby_video.pic_path" />
                         	<div class="uk-thumbnail-caption" style="text-align:left">
-                                	<div class="font_desc">Execl的表格之道</div>
-                                	<div class="font_author">向前</div>
-					<div class="font_price">￥免费</div>
-                       		</div>
-                	</a>
-			<a class="uk-thumbnail uk-width-1-4" href="">
-                        	<img src="../static/src/test.png" alt="">
-                        	<div class="uk-thumbnail-caption" style="text-align:left">
-                                	<div class="font_desc">Execl的表格之道</div>
-                                	<div class="font_author">向前</div>
-					<div class="font_price">￥免费</div>
+                                	<div class="font_desc" v-text=hobby_video.name></div>
+                                	<div class="font_author" v-text=hobby_video.user_id></div>
+					<div class="font_price" v-text=hobby_video.price></div>
                        		</div>
                 	</a>
 		</div>

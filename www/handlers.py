@@ -5,7 +5,7 @@ import re, time, json, logging, hashlib, base64, asyncio
 
 from web_frame import get, post
 
-from models import User, next_id
+from models import User, Video, next_id
 
 from aiohttp import web
 
@@ -64,6 +64,16 @@ def index():
 	'__template__' : 'home.html'
 	}
 
+@get('/api/videos')
+def api_videos():
+    free_videos = yield from Video.findAll(where="video_type='free'", orderBy='created_at desc', limit=(4))
+    it_videos = yield from Video.findAll(where="video_type='it'", orderBy='created_at desc', limit=(4))
+    work_skill_videos = yield from Video.findAll(where="video_type='work_skill'", orderBy='created_at desc', limit=(4))
+    language_videos = yield from Video.findAll(where="video_type='language'", orderBy='created_at desc', limit=(4))
+    hobby_videos = yield from Video.findAll(where="video_type='hobby'", orderBy='created_at desc', limit=(4))
+    return dict(free_videos=free_videos, it_videos=it_videos, work_skill_videos=work_skill_videos, language_videos=language_videos,
+    hobby_videos=hobby_videos)
+
 @get('/register')
 def register():
         return {
@@ -114,22 +124,36 @@ def mydiscuss():
 		'__template__' : 'mydiscuss.html'
 	}
 
-@get('/lesson')
-def lesson():
+@get('/lesson/{video_type},{sub_video_type}')
+def lesson(*, video_type, sub_video_type):
 	return {
-		'__template__' : 'lesson.html'
+		'__template__' : 'lesson.html',
+		'video_type' : video_type,
+		'sub_video_type' : sub_video_type
 	}
 
-@get('/detail_lesson')
-def detail_lesson():
-	return {
-		'__template__' : 'detail_lesson.html'
-	}
+@get('/api/lesson')
+def api_get_lesson(*, video_type, sub_video_type, page='1'):
+	if sub_video_type == '全部':
+		videos = yield from Video.findAll(where="video_type=video_type", orderBy='created_at desc')
+	else:
+		videos = yield from Video.findAll(where="video_type=video_type and sub_video_type=sub_video_type", orderBy='created_at desc')
+	return dict(videos=videos, video_type=video_type, sub_video_type=sub_video_type)
 
-@get('/video')
-def video():
+@get('/detail_lesson/{id}')
+def get_video(*, id):
+    video = yield from Video.find(id)
+    return {
+        '__template__': 'detail_lesson.html',
+        'video': video
+    }
+
+@get('/video/{id}')
+def video(*, id):
+	video = yield from Video.find(id);
 	return {
-	'__template__' : 'video.html'
+	'__template__' : 'video.html',
+	'video' : video
 }
 
 @get('/test')
