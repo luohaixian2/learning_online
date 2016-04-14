@@ -105,3 +105,13 @@ create table logs_info (
     `created_at` real not null,
     primary key (`id`)
 ) engine=innodb default charset=utf8;
+
+create table video_type_table (
+    `video_type` varchar(20) not null,
+    primary key (`video_type`)
+) engine=innodb default charset=utf8;
+
+create table sub_type (
+    `video_type` varchar(20) not null,
+    `sub_video_type` varchar(20) not null
+) engine=innodb default charset=utf8;

@@ -134,10 +134,12 @@ def lesson(*, video_type, sub_video_type):
 
 @get('/api/lesson')
 def api_get_lesson(*, video_type, sub_video_type, page='1'):
-	if sub_video_type == '全部':
+	if video_type == 'all':
+		videos = yield from Video.findAll(orderBy='created_at desc')
+	elif sub_video_type == 'all':
 		videos = yield from Video.findAll(where="video_type=video_type", orderBy='created_at desc')
 	else:
-		videos = yield from Video.findAll(where="video_type=video_type and sub_video_type=sub_video_type", orderBy='created_at desc')
+		videos = yield from Video.findAll(where="video_type='"+video_type+"' and sub_video_type='"+sub_video_type+"'", orderBy='created_at desc')
 	return dict(videos=videos, video_type=video_type, sub_video_type=sub_video_type)
 
 @get('/detail_lesson/{id}')
