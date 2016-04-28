@@ -31,3 +31,16 @@ class Video(Model):
     dir_num = StringField(ddl='int')
     people_num = StringField(ddl='int')
     created_at = FloatField(default=time.time)
+
+class Video_type_table(Model):
+	__table__ = 'video_type_table'
+
+	video_type = StringField(primary_key=True, ddl='varchar(20)')
+	video_type_text = StringField(ddl='varchar(20)')
+
+class Sub_type(Model):
+	__table__ = 'sub_type'
+
+	video_type = StringField(ddl='varchar(20)')
+	sub_video_type = StringField(primary_key=True, ddl='varchar(20)')
+	sub_video_type_text = StringField(ddl='varchar(20)')

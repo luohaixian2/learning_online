@@ -5,7 +5,7 @@ import re, time, json, logging, hashlib, base64, asyncio
 
 from web_frame import get, post
 
-from models import User, Video, next_id
+from models import User, Video, Video_type_table, Sub_type, next_id
 
 from aiohttp import web
 
@@ -139,8 +139,13 @@ def api_get_lesson(*, video_type, sub_video_type, page='1'):
 	elif sub_video_type == 'all':
 		videos = yield from Video.findAll(where="video_type=video_type", orderBy='created_at desc')
 	else:
-		videos = yield from Video.findAll(where="video_type='"+video_type+"' and sub_video_type='"+sub_video_type+"'", orderBy='created_at desc')
-	return dict(videos=videos, video_type=video_type, sub_video_type=sub_video_type)
+		videos = yield from Video.findAll(where="sub_video_type='"+sub_video_type+"'", orderBy='created_at desc')
+	all_video_type = yield from Video_type_table.findAll()
+	all_sub_type = {}
+	for big_type in all_video_type:
+		sub_type = yield from Sub_type.findAll(where="video_type='"+big_type.video_type+"'")
+		all_sub_type[big_type.video_type] = sub_type
+	return dict(videos=videos, video_type=video_type, sub_video_type=sub_video_type, all_video_type=all_video_type, all_sub_type = all_sub_type)
 
 @get('/detail_lesson/{id}')
 def get_video(*, id):
