@@ -1,4 +1,4 @@
-// awesome.js
+// my.js
 
 // patch for lower-version IE:
 
@@ -119,9 +119,8 @@ function parseQueryString() {
 }
 
 function gotoPage(i) {
-    var r = parseQueryString();
-    r.page = i;
-    location.assign('?' + $.param(r));
+    hre = location.href;
+    location.assign(hre.substring(0, hre.lastIndexOf(','))+','+i);
 }
 
 function refresh() {

@@ -124,28 +124,51 @@ def mydiscuss():
 		'__template__' : 'mydiscuss.html'
 	}
 
-@get('/lesson/{video_type},{sub_video_type}')
-def lesson(*, video_type, sub_video_type):
+@get('/lesson/{video_type},{sub_video_type},{page}')
+def lesson(*, video_type, sub_video_type, page):
 	return {
 		'__template__' : 'lesson.html',
 		'video_type' : video_type,
-		'sub_video_type' : sub_video_type
+		'sub_video_type' : sub_video_type,
+		'page_index' : page
 	}
+
+def get_page_index(page_str):
+    p = 1
+    try:
+        p = int(page_str)
+    except ValueError as e:
+        pass
+    if p < 1:
+        p = 1
+    return p
 
 @get('/api/lesson')
 def api_get_lesson(*, video_type, sub_video_type, page='1'):
+	page_index = get_page_index(page)
+	#获取条数	
 	if video_type == 'all':
-		videos = yield from Video.findAll(orderBy='created_at desc')
+		num = yield from Video.findNumber('count(*)')
 	elif sub_video_type == 'all':
-		videos = yield from Video.findAll(where="video_type=video_type", orderBy='created_at desc')
+		num = yield from Video.findNumber('count(*)', where="video_type=video_type")
 	else:
-		videos = yield from Video.findAll(where="sub_video_type='"+sub_video_type+"'", orderBy='created_at desc')
+		num = yield from Video.findNumber('count(*)', where="sub_video_type='"+sub_video_type+"'")
+	#得到分页的相关信息，比如查询位移
+	p = Page(num, page_index, 9)
+	if video_type == 'all':
+		videos = yield from Video.findAll(orderBy='created_at desc', limit=(p.offset, p.limit))
+	elif sub_video_type == 'all':
+		videos = yield from Video.findAll(where="video_type=video_type", orderBy='created_at desc', limit=(p.offset, p.limit))
+	else:
+		videos = yield from Video.findAll(where="sub_video_type='"+sub_video_type+"'", 
+		orderBy='created_at desc', limit=(p.offset, p.limit))
 	all_video_type = yield from Video_type_table.findAll()
 	all_sub_type = {}
 	for big_type in all_video_type:
 		sub_type = yield from Sub_type.findAll(where="video_type='"+big_type.video_type+"'")
 		all_sub_type[big_type.video_type] = sub_type
-	return dict(videos=videos, video_type=video_type, sub_video_type=sub_video_type, all_video_type=all_video_type, all_sub_type = all_sub_type)
+	return dict(videos=videos, video_type=video_type, sub_video_type=sub_video_type, all_video_type=all_video_type, 
+		    all_sub_type = all_sub_type, page = p)
 
 @get('/detail_lesson/{id}')
 def get_video(*, id):
@@ -305,16 +328,6 @@ def api_get_users():
 	for u in users:
 		u.passwd = '99999'
 	return dict(users = users)
-
-def get_page_index(page_str):
-    p = 1
-    try:
-        p = int(page_str)
-    except ValueError as e:
-        pass
-    if p < 1:
-        p = 1
-    return p
 
 @get('/api/blogs')
 def api_blogs(*, page='1'):

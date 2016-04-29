@@ -1,15 +1,8 @@
-<html>
-<head>
-<meta charset="utf-8">
-<link rel="stylesheet" href="../static/css/uikit.min.css">
-<link rel="stylesheet" href="../static/css/uikit.gradient.min.css">
-<link rel="stylesheet" href="../static/css/my.css">
-<script src="../static/js/jquery.min.js"></script>
-<script src="../static/js/sha1.min.js"></script>
-<script src="../static/js/uikit.min.js"></script>
-<script src="../static/js/sticky.min.js"></script>
-<script src="../static/js/vue.min.js"></script>
-<script src="../static/js/my.js"></script>
+{% extends '__home_base__.html' %}
+
+{% block title %}教程分类{% endblock %}
+
+{% block script %}
 <script>
 var video_type = '{{video_type}}';
 var sub_video_type = '{{sub_video_type}}';
@@ -22,6 +15,7 @@ function initVM(data) {
 			sub_video_type : data.sub_video_type,
 			all_video_type : data.all_video_type,
 			all_sub_type : data.all_sub_type,
+			page : data.page,	
 		},
 		methods: {
 
@@ -31,9 +25,9 @@ function initVM(data) {
 
 $(function() {
     getJSON('/api/lesson', {
-        page: '1',
+        page: '{{page_index}}',
 	video_type : '{{video_type}}',
-	sub_video_type : '{{sub_video_type}}'
+	sub_video_type : '{{sub_video_type}}',
     }, function (err, results) {
         if (err) {
             return fatal(err);
@@ -44,7 +38,9 @@ $(function() {
 });
 
 </script>
-</head>
+{% endblock %}
+
+{% block style %}
 <style type="text/css">
 .ul2_class {
         margin:0px;
@@ -63,8 +59,10 @@ $(function() {
         color:green;
 }
 </style>
-<body>
-	<div id="vm" style="margin:50px">
+{% endblock %}
+
+{% block content %}
+	<div id="vm">
 	  <div style="margin-bottom:30px">
 		<ul class="font_title uk-tab" data-uk-tab="" 
 		data-uk-switcher="{connect:'#subnav-pill-content-1'}">
@@ -81,7 +79,7 @@ $(function() {
 					<ul class="uk-breadcrumb">
     						<li v-repeat="s_type : all_sub_type[type.video_type]" 
 						v-attr="class: s_type.sub_video_type==sub_video_type?'uk-active':''">
-							<a v-attr="href:'/lesson/'+type.video_type+','+s_type.sub_video_type,
+							<a v-attr="href:'/lesson/'+type.video_type+','+s_type.sub_video_type+',1',
 							style:'display:'+(s_type.sub_video_type==sub_video_type?'none':'dd')"  
 							v-text=s_type.sub_video_type_text></a>
 							<span v-text=s_type.sub_video_type_text 
@@ -95,7 +93,7 @@ $(function() {
 	<div class="uk-grid">	
 		<div class="uk-width-3-4">
 			<div class="uk-grid uk-grid-medium" style="margin-left:0px;">
-                        	<a class="uk-thumbnail uk-width-1-4" v-repeat="video : videos"  v-attr="href:'/video/'+video.id">
+                        	<a class="uk-thumbnail uk-width-1-4" v-repeat="video : videos"  v-attr="href:'/detail_lesson/'+video.id">
                                 <img v-attr="src:video.pic_path" alt="">
                                 <div class="uk-thumbnail-caption" style="text-align:left">
                                 	<div class="font_desc" v-text=video.name></div>
@@ -105,6 +103,8 @@ $(function() {
                                 </div>
                        		</a>
                 	</div>
+			<hr class="uk-article-divider">
+            		<div v-component="pagination" v-with="page"></div>
 		</div>
 		
 		<div class="uk-width-1-4">
@@ -140,5 +140,4 @@ $(function() {
 		</div>
 	</div>
     </div>
-</body>
-</html>
+{% endblock %}

@@ -1,15 +1,8 @@
-<html>
-<head>
-<meta charset="utf-8">
-<link rel="stylesheet" href="../static/css/uikit.min.css">
-<link rel="stylesheet" href="../static/css/uikit.gradient.min.css">
-<link rel="stylesheet" href="../static/css/my.css">
-<script src="../static/js/jquery.min.js"></script>
-<script src="../static/js/sha1.min.js"></script>
-<script src="../static/js/uikit.min.js"></script>
-<script src="../static/js/sticky.min.js"></script>
-<script src="../static/js/vue.min.js"></script>
-<script src="../static/js/my.js"></script>
+{% extends '__home_base__.html' %}
+
+{% block title %}教程详细简介{% endblock %}
+
+{% block script %}
 <script>
 $(function(){
 	var vm = new Vue({
@@ -23,6 +16,9 @@ $(function(){
 	});
 })	
 </script>
+{% endblock %}
+
+{% block style %}
 <style type="text/css">
 .ul3_class {
         margin:0px;
@@ -40,10 +36,10 @@ $(function(){
         color:green;
 }
 </style>
+{% endblock %}
 
-</head>
-<body>
-	<div id="vm" style="margin:50px">
+{% block content %}
+	<div id="vm">
 		<div class="uk-grid" data-uk-grid-match="{row: false}" style="border:1px solid #DDDDDD">
 			<div class="uk-width-1-2">
 				<img class="uk-width-1-1" src={{video.pic_path}}>
@@ -143,5 +139,4 @@ $(function(){
 			</div>
 		</div>
 	</div>
-</body>
-</html>
+{% endblock %}
