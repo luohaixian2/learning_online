@@ -15,9 +15,9 @@
 <script src="../static/js/sticky.min.js"></script>
 <script src="../static/js/vue.min.js"></script>
 <script src="../static/js/my.js"></script>
-{% block script %}<!-- before head  -->{% endblock %}
-</head>
+{% block script %}{% endblock %}
 {% block style %}{% endblock %}
+</head>
 <body>
 
 	<div id="vm" style = "margin:20px">
@@ -32,7 +32,6 @@
 						 {{__user__.name}}</button>
 						<div style="" class="uk-dropdown">
                                        			<ul class="uk-nav uk-nav-dropdown">
-                                           			<li><a href="/mystorm">个人中心</a></li>
                                             			<li><a href="/signout">登出</a></li>
                                         		</ul>
                                     		</div>
@@ -46,14 +45,14 @@
 			</div>	
 		</div>
 
-		<div>
+		<div style="margin-bottom:20px">
 			<nav class="tm-navbar uk-navbar uk-navbar-attached">
                 		<ul class="uk-navbar-nav uk-hidden-small">
-                    			<li><a href="documentation_get-started.html">教程管理</a></li>
-                    			<li class="uk-active"><a href="core.html">拥有教程</a></li>
-                    			<li><a href="components.html">收藏教程</a></li>
-                    			<li><a href="customizer.html">学习计划</a></li>
-                    			<li><a href="../showcase/index.html">我的消息</a></li>
+                    			<li class="uk-active"><a href="/personal/video_manage">教程管理</a></li>
+                    			<li><a href="/personal/video_owe">拥有教程</a></li>
+                    			<li><a href="/personal/video_collection">收藏教程</a></li>
+                    			<li><a href="/personal/study_plane">学习计划</a></li>
+                    			<li><a href="/personal/message">我的消息</a></li>
                 		</ul>
 
                 		<a href="#tm-offcanvas" class="uk-navbar-toggle uk-visible-small" data-uk-offcanvas=""></a>

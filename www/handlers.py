@@ -94,12 +94,6 @@ def signout(request):
         logging.info('user sign out.')
         return r
 
-@get('/personal')
-def personal():
-	return {
-		'__template__' : 'personal_video_manage.html'
-	}
-
 @get('/lesson/{video_type},{sub_video_type},{page}')
 def lesson(*, video_type, sub_video_type, page):
 	return {
@@ -126,7 +120,7 @@ def api_get_lesson(*, video_type, sub_video_type, page='1'):
 	if video_type == 'all':
 		num = yield from Video.findNumber('count(*)')
 	elif sub_video_type == 'all':
-		num = yield from Video.findNumber('count(*)', where="video_type=video_type")
+		num = yield from Video.findNumber('count(*)', where="video_type='"+video_type+"'")
 	else:
 		num = yield from Video.findNumber('count(*)', where="sub_video_type='"+sub_video_type+"'")
 	#得到分页的相关信息，比如查询位移
@@ -145,6 +139,34 @@ def api_get_lesson(*, video_type, sub_video_type, page='1'):
 		all_sub_type[big_type.video_type] = sub_type
 	return dict(videos=videos, video_type=video_type, sub_video_type=sub_video_type, all_video_type=all_video_type, 
 		    all_sub_type = all_sub_type, page = p)
+
+@get('/api/manage_videos')
+def api_user_manage_videos(*, page='1', user_id='e'):
+	page_index = get_page_index(page)
+	num = yield from Video.findNumber('count(*)', where="user_id='"+user_id+"'")
+	p = Page(num, page_index, 10)
+	videos = yield from Video.findAll(where="user_id='"+user_id+"'", orderBy="created_at desc", limit=(p.offset, p.limit))
+	return dict(videos=videos, page = p)
+
+@get('/personal/video_manage')
+def personal_video_manage():
+	return {
+		'__template__' : 'personal_video_manage.html',
+		'page_index' : '1'
+	}
+
+@get('/personal/video_create')
+def personal_video_create():
+	return {
+		'__template__' : 'personal_video_create.html'
+	}
+
+@get('/personal/video_owe')
+def personal_video_owe():
+	return {
+		'__template__' : 'personal_video_owe.html',
+		'page_index' : '1'
+	}
 
 @get('/detail_lesson/{id}')
 def get_video(*, id):
