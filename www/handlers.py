@@ -97,31 +97,7 @@ def signout(request):
 @get('/personal')
 def personal():
 	return {
-		'__template__' : 'personal.html'
-	}
-
-@get('/mystorm')
-def mystorm():
-	return {
-		'__template__' : 'mystorm.html'
-	}
-
-@get('/stuplane')
-def stuplane():
-	return {
-		'__template__' : 'stuplane.html'
-	}
-
-@get('/mylove')
-def mylove():
-	return {
-		'__template__' : 'mylove.html'
-	}
-
-@get('/mydiscuss')
-def mydiscuss():
-	return {
-		'__template__' : 'mydiscuss.html'
+		'__template__' : 'personal_video_manage.html'
 	}
 
 @get('/lesson/{video_type},{sub_video_type},{page}')
