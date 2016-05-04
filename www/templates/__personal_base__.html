@@ -1,0 +1,69 @@
+<html>
+<head>
+<meta charset="utf-8">
+{% block meta %}<!-- block meta  -->{% endblock %}
+<title>{% block title %} ? {% endblock %} - 个人中心</title>
+<link rel="stylesheet" href="../static/css/uikit.min.css">
+<link rel="stylesheet" href="../static/css/uikit.gradient.min.css">
+<link rel="stylesheet" href="../static/css/my.css">
+<link rel="stylesheet" href="../static/css/uikit.docs.min.css">
+<link rel="stylesheet" href="../static/css/docs.css">
+<link rel="stylesheet" href="../static/css/highlight.css">
+<script src="../static/js/jquery.min.js"></script>
+<script src="../static/js/sha1.min.js"></script>
+<script src="../static/js/uikit.min.js"></script>
+<script src="../static/js/sticky.min.js"></script>
+<script src="../static/js/vue.min.js"></script>
+<script src="../static/js/my.js"></script>
+{% block script %}<!-- before head  -->{% endblock %}
+</head>
+{% block style %}{% endblock %}
+<body>
+
+	<div id="vm" style = "margin:20px">
+		<div class="uk-grid" style="margin-top:50px;margin-bottom:50px">
+			<div class="uk-width-3-4">
+				<div class="title_font"><a href="/"><i class="uk-icon-book"></i>网上云课堂</a></div>
+			</div>
+			<div class="uk-width-1-4" style="text-align:right">
+                			{% if __user__ %}
+                    			<div class="uk-button-dropdown" data-uk-dropdown="">
+						<button class="uk-button uk-button-primary"><i class="uk-icon-user"></i>
+						 {{__user__.name}}</button>
+						<div style="" class="uk-dropdown">
+                                       			<ul class="uk-nav uk-nav-dropdown">
+                                           			<li><a href="/mystorm">个人中心</a></li>
+                                            			<li><a href="/signout">登出</a></li>
+                                        		</ul>
+                                    		</div>
+
+                    			</div>
+                			{% else %}
+                    			<span class="margin_right_small"><a href="/signin"><i class="uk-icon-sign-in"></i> 登陆</a></span>
+                    			<span><a href="/register"><i class="uk-icon-edit"></i> 注册</a></span>
+                			{% endif %}
+
+			</div>	
+		</div>
+
+		<div>
+			<nav class="tm-navbar uk-navbar uk-navbar-attached">
+                		<ul class="uk-navbar-nav uk-hidden-small">
+                    			<li><a href="documentation_get-started.html">教程管理</a></li>
+                    			<li class="uk-active"><a href="core.html">拥有教程</a></li>
+                    			<li><a href="components.html">收藏教程</a></li>
+                    			<li><a href="customizer.html">学习计划</a></li>
+                    			<li><a href="../showcase/index.html">我的消息</a></li>
+                		</ul>
+
+                		<a href="#tm-offcanvas" class="uk-navbar-toggle uk-visible-small" data-uk-offcanvas=""></a>
+       			</nav>
+		</div>
+		
+		<!-- content -->
+		{% block content %}
+		{% endblock %}
+		<!-- // content -->
+	</div>
+</body>
+</html>
