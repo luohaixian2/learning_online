@@ -5,7 +5,7 @@ import re, time, json, logging, hashlib, base64, asyncio
 
 from web_frame import get, post
 
-from models import User, Video, Video_type_table, Sub_type, next_id
+from models import User, Video, Video_type_table, Sub_type, Having_video, Collection_video, Study_plane, next_id
 
 from aiohttp import web
 
@@ -141,7 +141,7 @@ def api_get_lesson(*, video_type, sub_video_type, page='1'):
 		    all_sub_type = all_sub_type, page = p)
 
 @get('/api/manage_videos')
-def api_user_manage_videos(*, page='1', user_id='e'):
+def api_user_manage_videos(*, page='1', user_id):
 	page_index = get_page_index(page)
 	num = yield from Video.findNumber('count(*)', where="user_id='"+user_id+"'")
 	p = Page(num, page_index, 10)
@@ -167,6 +167,66 @@ def personal_video_owe():
 		'__template__' : 'personal_video_owe.html',
 		'page_index' : '1'
 	}
+
+@get('/personal/video_collection')
+def personal_video_collection():
+	return {
+		'__template__' : 'personal_video_collection.html',
+		'page_index' : '1'
+	}
+
+@get('/personal/study_plane')
+def personal_study_plane():
+	return {
+		'__template__' : 'personal_study_plane.html',
+		'page_index' : '1'
+	}
+
+@get('/personal/get_video_owe')
+def personal_get_video_owe(*, user_id, page='1'):
+	page_index = get_page_index(page)
+	num = yield from Having_video.findNumber('count(*)', where="user_id='"+user_id+"'")
+	p = Page(num, page_index, 10)
+	results = []
+	hav_videos = yield from Having_video.findAll(where="user_id='"+user_id+"'", orderBy="created_at desc", limit=(p.offset, p.limit))
+	for hav_video in hav_videos:
+		result = {}
+		result['created_at'] = hav_video.created_at
+		result['video_progress'] = hav_video.video_progress
+		print('TERSREE',hav_video.video_id)
+		video = yield from Video.findAll(where="id='"+hav_video.video_id+"'")
+		if video is not None:
+			result['id'] = video[0].id
+			result['name'] = video[0].name
+			result['dir_num'] = video[0].dir_num
+			result['price'] = video[0].price
+			results.append(result)
+	return dict(videos=results, page = p)
+	
+@get('/personal/get_video_collection')
+def personal_get_video_collection(*, user_id, page='1'):
+	page_index = get_page_index(page)
+	num = yield from Collection_video.findNumber('count(*)', where="user_id='"+user_id+"'")
+	p = Page(num, page_index, 10)
+	results = []
+	hav_videos = yield from Collection_video.findAll(where="user_id='"+user_id+"'", orderBy="created_at desc", limit=(p.offset, p.limit))
+	for hav_video in hav_videos:
+		result = {}
+		result['created_at'] = hav_video.created_at
+		result['id'] = hav_video.id
+		video = yield from Video.findAll(where="id='"+hav_video.video_id+"'")
+		if video is not None:
+			result['video_id'] = video[0].id
+			result['name'] = video[0].name
+			result['dir_num'] = video[0].dir_num
+			result['price'] = video[0].price
+			results.append(result)
+	return dict(videos=results, page = p)
+
+@get('/personal/get_study_plane')
+def personal_get_study_plane(*, user_id, page='1'):
+	page_index = get_page_index(page)
+	#num = yield from Study_plane.findNumber('count(*)', where="user_id='"+user_id+"' and ")
 
 @get('/detail_lesson/{id}')
 def get_video(*, id):
@@ -257,6 +317,13 @@ def authenticate(*, email, passwd):
 	r.content_type = 'application/json'
 	r.body = json.dumps(user, ensure_ascii = False).encode('utf-8')
 	return r
+
+@post('/personal/collection_video/delete/{id}')
+def personal_collection_delete(*, id):
+    video = yield from Collection_video.find(id)
+    yield from video.remove()
+    return dict(id=id)
+
 
 def check_admin(request):
     #print('Request.__user_: _' , request.__user__)

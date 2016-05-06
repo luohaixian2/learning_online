@@ -1,6 +1,6 @@
 {% extends '__personal_base__.html' %}
 
-{% block title %}拥有教程{% endblock %}
+{% block title %}教程收藏{% endblock %}
 
 {% block script %}
 <script>
@@ -12,16 +12,28 @@ function initVM(data) {
             page: data.page
         },
         methods: {
-
+            edit_video: function (video) {
+                location.assign('/detail_lesson/' + video.video_id);
+            },
+            delete_video: function (video) {
+                if (confirm('确认要删除“' + video.name + '”？删除后不可恢复！')) {
+                    postJSON('/personal/collection_video/delete/' + video.id, function (err, r) {
+                        if (err) {
+                            return alert(err.message || err.error || err);
+                        }
+                        refresh();
+                    });
+                }
+            }
         }
     });
     $('#vm').show();
 }
 
 $(function() {
-    getJSON('/personal/get_video_owe', {
+    getJSON('/personal/get_video_collection', {
         page: {{ page_index }},
-        user_id : '{{ __user__.id }}'
+	user_id : '{{ __user__.id }}'
     }, function (err, results) {
         if (err) {
             return fatal(err);
@@ -30,6 +42,7 @@ $(function() {
     });
 });
 </script>
+
 {% endblock %}
 
 {% block style %}{% endblock %}
@@ -41,9 +54,8 @@ $(function() {
                 <tr>
                     <th class="uk-width-2-10">教程名</th>
                     <th class="uk-width-2-10">教程节数</th>
-                    <th class="uk-width-1-10">学习进度</th>
-                    <th class="uk-width-1-10">价格</th>
-                    <th class="uk-width-2-10">开始拥有时间</th>
+                    <th class="uk-width-2-10">价格</th>
+                    <th class="uk-width-2-10">收藏时间</th>
                     <th class="uk-width-2-10">操作</th>
                 </tr>
             </thead>
@@ -56,16 +68,14 @@ $(function() {
                         <span v-text="video.dir_num"></span>
                     </td>
                     <td>
-                        <span v-text="video.video_progress"></span>
-                    </td>
-                    <td>
                         <span v-text="video.price"></span>
                     </td>
                     <td>
                         <span v-text="video.created_at.toDateTime()"></span>
                     </td>
                     <td>
-                        <a class="uk-button uk-button-primary" v-attr="href:'/detail_lesson/'+video.id">查看</a>
+                        <a href="#0" v-on="click: edit_video(video)">查看</a>
+                        <a href="#0" v-on="click: delete_video(video)">删除</a>
                     </td>
                 </tr>
             </tbody>

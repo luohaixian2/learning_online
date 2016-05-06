@@ -15,12 +15,31 @@
 <script src="../static/js/sticky.min.js"></script>
 <script src="../static/js/vue.min.js"></script>
 <script src="../static/js/my.js"></script>
-{% block script %}{% endblock %}
+<script>
+/*
+$(function() {
+	alert('ff');
+	var guide_value = new Array("video_manage", "video_owe", "video_collection", "study_plane", "message");
+	var guide_text = new Array("教程管理", "拥有教程", "收藏教程", "学习计划", "我的消息");
+	var vm2 = new Vue({
+		el: '#vm2',
+		data: {
+		
+		},
+		methods: {
+
+		}	
+	});
+});
+*/
+</script>
+{% block script %}
+{% endblock %}
 {% block style %}{% endblock %}
 </head>
 <body>
 
-	<div id="vm" style = "margin:20px">
+	<div id="vm2" style = "margin:20px">
 		<div class="uk-grid" style="margin-top:50px;margin-bottom:50px">
 			<div class="uk-width-3-4">
 				<div class="title_font"><a href="/"><i class="uk-icon-book"></i>网上云课堂</a></div>
@@ -48,11 +67,13 @@
 		<div style="margin-bottom:20px">
 			<nav class="tm-navbar uk-navbar uk-navbar-attached">
                 		<ul class="uk-navbar-nav uk-hidden-small">
-                    			<li class="uk-active"><a href="/personal/video_manage">教程管理</a></li>
-                    			<li><a href="/personal/video_owe">拥有教程</a></li>
-                    			<li><a href="/personal/video_collection">收藏教程</a></li>
-                    			<li><a href="/personal/study_plane">学习计划</a></li>
-                    			<li><a href="/personal/message">我的消息</a></li>
+					{% for guide in __guide__ %}
+						{% if guide == __guide_cur__ %}
+                    					<li class="uk-active"><a href="/personal/{{guide}}">{{__guide_text__[guide]}}</a></li>
+						{% else %}
+                    					<li><a href="/personal/{{guide}}">{{__guide_text__[guide]}}</a></li>
+						{% endif %}
+					{% endfor %}
                 		</ul>
 
                 		<a href="#tm-offcanvas" class="uk-navbar-toggle uk-visible-small" data-uk-offcanvas=""></a>

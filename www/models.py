@@ -44,3 +44,32 @@ class Sub_type(Model):
 	video_type = StringField(ddl='varchar(20)')
 	sub_video_type = StringField(primary_key=True, ddl='varchar(20)')
 	sub_video_type_text = StringField(ddl='varchar(20)')
+
+class Having_video(Model):
+	__table__ = 'having_videos'
+	
+	id = StringField(primary_key=True, default=next_id, ddl='varchar(50)')
+	user_id = StringField(ddl='varchar(50)')
+	video_id = StringField(ddl='varchar(50)')
+	video_progress = StringField(ddl='varchar(20)')
+	created_at = FloatField(default=time.time)
+
+class Collection_video(Model):
+	__table__ = 'collection_videos'
+	
+	id = StringField(primary_key=True, default=next_id, ddl='varchar(50)')
+	user_id = StringField(ddl='varchar(50)')
+	video_id = StringField(ddl='varchar(50)')
+	created_at = FloatField(default=time.time)
+
+class Study_plane(Model):
+	__table__ = 'study_planes'
+	
+	id = StringField(primary_key=True, default=next_id, ddl='varchar(50)')
+	user_id = StringField(ddl='varchar(50)')
+	plane_title = StringField(ddl='varchar(20)')
+	plane_content = StringField(ddl='varchar(100)')
+	plane_state = StringField(ddl='varchar(10)')
+	start_time = FloatField(default=time.time)
+	end_time = FloatField(default=time.time)
+	created_at = FloatField(default=time.time)

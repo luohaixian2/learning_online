@@ -68,12 +68,27 @@ def auth_factory(app, handler):
     def auth(request):
         logging.info('check user: %s %s' % (request.method, request.path))
         request.__user__ = None
+        request.__guide__ = None
+        request.__guide_text__ = None
+        request.__guide_cur__ = None
+        guide = ('video_manage', 'video_owe', 'video_collection', 'study_plane', 'message')
+        guide_text = {}
+        guide_text['video_manage'] = '教程管理'
+        guide_text['video_owe'] = '拥有教程'
+        guide_text['video_collection'] = '教程收藏'
+        guide_text['study_plane'] = '学习计划'
+        guide_text['message'] = '我的消息'
+		
         cookie_str = request.cookies.get(COOKIE_NAME)
         if cookie_str:
             user = yield from cookie2user(cookie_str)
             if user:
                 logging.info('set current user: %s' % user.email)
                 request.__user__ = user
+                if request.path.startswith('/personal/'):
+                    request.__guide__ = guide
+                    request.__guide_text__ = guide_text
+                    request.__guide_cur__ = request.path[request.path.rfind('/')+1:]
         #if request.path.startswith('/manage/') and (request.__user__ is None or not request.__user__.admin):
         #    return web.HTTPFound('/signin')
         return (yield from handler(request))
@@ -100,6 +115,9 @@ def response_factory(app, handler):
             return resp
         if isinstance(r, dict):
             r['__user__'] = request.__user__
+            r['__guide__'] = request.__guide__
+            r['__guide_text__'] = request.__guide_text__
+            r['__guide_cur__'] = request.__guide_cur__
             template = r.get('__template__')
             if template is None:
                 resp = web.Response(body=json.dumps(r, ensure_ascii=False, default=lambda o: o.__dict__).encode('utf-8'))

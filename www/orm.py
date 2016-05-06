@@ -57,6 +57,9 @@ def execute(sql, args, autocommit = True):
 			raise e
 	return affected_row
 
+#def special_select_owe_method(sql):
+	
+
 class Field(object):
 	def __init__(self, name, column_type, primary_key, default):
 		self.name = name

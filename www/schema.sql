@@ -52,7 +52,9 @@ create table video_comments (
 create table study_planes (
     `id` varchar(50) not null,
     `user_id` varchar(50) not null,
+    `plane_title` varchar(20) not null,
     `plane_content` varchar(100) not null,
+    `plane_state` varchar(10) not null,
     `start_time` real not null,
     `end_time` real not null,
     `created_at` real not null,
@@ -73,6 +75,7 @@ create table having_videos (
     `id` varchar(50) not null,
     `user_id` varchar(50) not null,
     `video_id` varchar(50) not null,
+    `video_progress` varchar(20) not null,
     `created_at` real not null,
     primary key (`id`)
 ) engine=innodb default charset=utf8;
@@ -81,6 +84,7 @@ create table having_videos (
 create table messages (
     `id` varchar(50) not null,
     `recv_id` varchar(50) not null,
+    `title` varchar(20) not null,
     `content` varchar(200) not null,
     `created_at` real not null,
     primary key (`id`)
@@ -90,6 +94,7 @@ create table messages (
 create table feedbacks_info (
     `id` varchar(50) not null,
     `user_id` varchar(50) not null,
+    `title` varchar(20) not null,
     `content` varchar(500) not null,
     `created_at` real not null,
     primary key (`id`)
@@ -108,10 +113,13 @@ create table logs_info (
 
 create table video_type_table (
     `video_type` varchar(20) not null,
+    `video_type_text` varchar(20) not null,
     primary key (`video_type`)
 ) engine=innodb default charset=utf8;
 
 create table sub_type (
     `video_type` varchar(20) not null,
-    `sub_video_type` varchar(20) not null
+    `sub_video_type` varchar(20) not null,
+    `sub_video_type_text` varchar(20) not null,
+    primary key (`sub_video_type`)
 ) engine=innodb default charset=utf8;
