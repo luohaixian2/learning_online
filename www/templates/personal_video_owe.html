@@ -19,7 +19,7 @@ function initVM(data) {
 }
 
 $(function() {
-    getJSON('/personal/get_video_owe', {
+    getJSON('/personal_get_video_owe', {
         page: {{ page_index }},
         user_id : '{{ __user__.id }}'
     }, function (err, results) {

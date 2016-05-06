@@ -85,7 +85,7 @@ def auth_factory(app, handler):
             if user:
                 logging.info('set current user: %s' % user.email)
                 request.__user__ = user
-                if request.path.startswith('/personal/'):
+                if request.path.startswith('/personal_'):
                     request.__guide__ = guide
                     request.__guide_text__ = guide_text
                     request.__guide_cur__ = request.path[request.path.rfind('/')+1:]

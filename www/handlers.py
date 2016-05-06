@@ -148,41 +148,77 @@ def api_user_manage_videos(*, page='1', user_id):
 	videos = yield from Video.findAll(where="user_id='"+user_id+"'", orderBy="created_at desc", limit=(p.offset, p.limit))
 	return dict(videos=videos, page = p)
 
-@get('/personal/video_manage')
-def personal_video_manage():
+@get('/personal_video_manage')
+def personal_video_manage(*, page='1'):
 	return {
 		'__template__' : 'personal_video_manage.html',
-		'page_index' : '1'
+		'page_index' : page
 	}
 
-@get('/personal/video_create')
+@get('/personal_video_create')
 def personal_video_create():
 	return {
 		'__template__' : 'personal_video_create.html'
 	}
 
-@get('/personal/video_owe')
+@get('/personal_study_plane_create')
+def personal_study_plane_create():
+	return {
+		'__template__' : 'personal_study_plane_create.html'
+	}
+
+@get('/personal_video_owe')
 def personal_video_owe():
 	return {
 		'__template__' : 'personal_video_owe.html',
 		'page_index' : '1'
 	}
 
-@get('/personal/video_collection')
+@get('/personal_video_collection')
 def personal_video_collection():
 	return {
 		'__template__' : 'personal_video_collection.html',
 		'page_index' : '1'
 	}
 
-@get('/personal/study_plane')
-def personal_study_plane():
+@get('/personal_study_plane')
+def personal_study_plane(*, page='1'):
 	return {
 		'__template__' : 'personal_study_plane.html',
 		'page_index' : '1'
 	}
 
-@get('/personal/get_video_owe')
+@get('/personal_study_plane_history')
+def personal_study_plane_history():
+	return {
+		'__template__' : 'personal_study_plane_history.html',
+		'page_index' : '1'
+	}
+
+@get('/personal_study_plane_create')
+def personal_study_plane_create():
+        return {
+                '__template__' : 'personal_study_plane_edit.html',
+                'id' : '',
+                'action' : '/personal_post_study_plane_create'
+        }
+
+@get('/personal_study_plane_view/{id}')
+def personal_study_plane_view(*, id):
+        return {
+                '__template__' : 'personal_study_plane_view.html',
+                'id' : id
+        }
+
+@get('/personal_study_plane_edit/{id}')
+def edit_blogs(*, id):
+        return {
+                '__template__' : 'personal_study_plane_edit.html',
+                'id' : id,
+                'action' : '/personal_post_study_plane_edit/%s' % id
+        }
+
+@get('/personal_get_video_owe')
 def personal_get_video_owe(*, user_id, page='1'):
 	page_index = get_page_index(page)
 	num = yield from Having_video.findNumber('count(*)', where="user_id='"+user_id+"'")
@@ -203,7 +239,7 @@ def personal_get_video_owe(*, user_id, page='1'):
 			results.append(result)
 	return dict(videos=results, page = p)
 	
-@get('/personal/get_video_collection')
+@get('/personal_get_video_collection')
 def personal_get_video_collection(*, user_id, page='1'):
 	page_index = get_page_index(page)
 	num = yield from Collection_video.findNumber('count(*)', where="user_id='"+user_id+"'")
@@ -223,10 +259,29 @@ def personal_get_video_collection(*, user_id, page='1'):
 			results.append(result)
 	return dict(videos=results, page = p)
 
-@get('/personal/get_study_plane')
+@get('/personal_get_study_plane')
 def personal_get_study_plane(*, user_id, page='1'):
 	page_index = get_page_index(page)
-	#num = yield from Study_plane.findNumber('count(*)', where="user_id='"+user_id+"' and ")
+	num = yield from Study_plane.findNumber('count(*)', where="user_id='"+user_id+"' and plane_state='ing'")
+	p = Page(num, page_index, 10)
+	planes = yield from Study_plane.findAll(where="user_id='"+user_id+"' and plane_state='ing'", orderBy="created_at desc", 
+	limit=(p.offset, p.limit))
+	return dict(planes=planes, page=p)
+
+@get('/personal_get_study_plane_history')
+def personal_get_study_plane_history(*, user_id, page='1'):
+	page_index = get_page_index(page)
+	num = yield from Study_plane.findNumber('count(*)', where="user_id='"+user_id+"' and plane_state!='ing'")
+	p = Page(num, page_index, 10)
+	planes = yield from Study_plane.findAll(where="user_id='"+user_id+"' and plane_state!='ing'", orderBy="created_at desc", 
+	limit=(p.offset, p.limit))
+	return dict(planes=planes, page=p)
+
+@get('/personal_get_study_plane_edit/{id}')
+def personal_get_study_plane_edit(*, id):
+    plane = yield from Study_plane.find(id)
+    return plane
+
 
 @get('/detail_lesson/{id}')
 def get_video(*, id):
@@ -318,13 +373,48 @@ def authenticate(*, email, passwd):
 	r.body = json.dumps(user, ensure_ascii = False).encode('utf-8')
 	return r
 
-@post('/personal/collection_video/delete/{id}')
+@post('/personal_collection_video/delete/{id}')
 def personal_collection_delete(*, id):
     video = yield from Collection_video.find(id)
     yield from video.remove()
     return dict(id=id)
 
+@post('/personal_post_study_plane_create')
+def personal_post_study_plane_create(request, *, title, content, start_time, end_time):
+    print('HHHHHHHHHHHHHHH')
+    #检查是否是管理员操作，用user中的admin属性
+    #check_admin(request)
+    if not title or not title.strip():
+        raise APIValueError('title', 'title cannot be empty.')
+    if not content or not content.strip():
+        raise APIValueError('content', 'content cannot be empty.')
+    if not start_time or not start_time.strip():
+        raise APIValueError('start_time', 'start_time cannot be empty.')
+    plane = Study_plane(user_id=request.__user__.id, plane_title=title.strip(), plane_content=content.strip(), plane_state='ing', start_time=start_time.strip(), end_time=end_time.strip())
+    yield from plane.save()
+    return plane
 
+@post('/personal_post_study_plane_edit/{id}')
+def api_update_blog(id, request, *, title, content, start_time, end_time):
+    #check_admin(request)
+    plane = yield from Study_plane.find(id)
+    if not title or not title.strip():
+        raise APIValueError('title', 'title cannot be empty.')
+    if not content or not content.strip():
+        raise APIValueError('content', 'content cannot be empty.')
+    if not start_time or not start_time.strip():
+        raise APIValueError('start_time', 'start_time cannot be empty.')
+    if not end_time or not end_time.strip():
+        raise APIValueError('end_time', 'end_time cannot be empty.')
+    plane.plane_title = title.strip()
+    plane.plane_content = content.strip()
+    plane.start_time = start_time.strip()
+    plane.end_time = end_time.strip()
+    yield from plane.update()
+    return plane
+
+
+#----------------------------------------------------
 def check_admin(request):
     #print('Request.__user_: _' , request.__user__)
     if request.__user__ is None or not request.__user__.admin:

@@ -17,7 +17,7 @@ function initVM(data) {
             },
             delete_video: function (video) {
                 if (confirm('确认要删除“' + video.name + '”？删除后不可恢复！')) {
-                    postJSON('/personal/collection_video/delete/' + video.id, function (err, r) {
+                    postJSON('/personal_collection_video/delete/' + video.id, function (err, r) {
                         if (err) {
                             return alert(err.message || err.error || err);
                         }
@@ -31,7 +31,7 @@ function initVM(data) {
 }
 
 $(function() {
-    getJSON('/personal/get_video_collection', {
+    getJSON('/personal_get_video_collection', {
         page: {{ page_index }},
 	user_id : '{{ __user__.id }}'
     }, function (err, results) {
