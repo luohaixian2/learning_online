@@ -1,0 +1,80 @@
+{% extends '__personal_base__.html' %}
+
+{% block title %}查看学习计划{% endblock %}
+
+{% block script %}
+<script>
+var ID = '{{ id }}';
+function initVM(plane) {
+    var vm = new Vue({
+        el: '#vm',
+        data: {
+            plane: plane
+        },
+        methods: {
+        }
+    });
+    $('#vm').show();
+}
+$(function () {
+        getJSON('/personal_get_study_plane_edit/' + ID, function (err, plane) {
+            if (err) {
+                return fatal(err);
+            }
+            initVM(plane);
+        });
+});
+</script>
+
+{% endblock %}
+
+{% block style %}{% endblock %}
+
+{% block content %}
+	<div class="uk-grid" id="vm">
+		<div class="uk-width-1-4"></div>
+
+		<div class="uk-width-2-4">
+        		<h3 style="text-align:center">创建学习计划</h3>
+        		<form  class="uk-form uk-form-horizontal uk-form-stacked">
+            			<div class="uk-alert uk-alert-danger uk-hidden"></div>
+
+            			<div class="uk-form-row">
+                			<label class="uk-form-label">学习计划标题:</label>
+                			<div class="uk-form-controls">
+                    			<span v-text="plane.plane_title" class="uk-width-1-1"></span>
+                			</div>
+            			</div>
+
+            			<div class="uk-form-row">
+                			<label class="uk-form-label">学习计划内容:</label>
+                			<div class="uk-form-controls">
+						<span v-text="plane.plane_content"></span>
+                			</div>
+            			</div>
+
+            			<div class="uk-form-row">
+                			<label class="uk-form-label">开始时间:</label>
+                			<div class="uk-form-controls">
+                    				<span v-text="plane.start_time" class="uk-width-1-1"></span>
+                			</div>
+            			</div>
+
+            			<div class="uk-form-row">
+                			<label class="uk-form-label">结束时间:</label>
+                			<div class="uk-form-controls">
+                    				<span v-text="plane.end_time" class="uk-width-1-1"></span>
+                			</div>
+            			</div>
+
+            			<div class="uk-form-row">
+                			<a v-attr="href:'/personal_study_plane'" class="uk-button uk-button-primary">
+					<i class="uk-icon-user"></i> 返回</a>
+            			</div>
+        		</form>
+
+    		</div>
+
+		<div class="uk-width-1-4"></div>
+    </div>
+{% endblock %}

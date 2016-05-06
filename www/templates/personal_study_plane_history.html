@@ -1,0 +1,92 @@
+{% extends '__personal_base__.html' %}
+
+{% block title %}学习计划{% endblock %}
+
+{% block script %}
+<script>
+function initVM(data) {
+    var vm = new Vue({
+        el: '#vm',
+        data: {
+            planes: data.planes,
+            page: data.page
+        },
+        methods: {
+            view_plane: function (plane) {
+                location.assign('/personal_plane_view/id='+plane.id);
+            },
+            delete_plane: function (plane) {
+                if (confirm('确认要删除“' + plane.name + '”？删除后不可恢复！')) {
+                    postJSON('/personal_plane_delete/'+video.id, function (err, r) {
+                        if (err) {
+                            return alert(err.message || err.error || err);
+                        }
+                        refresh();
+                    });
+                }
+            }
+        }
+    });
+    $('#vm').show();
+}
+
+$(function() {
+    getJSON('/personal_get_study_plane_history', {
+        page: {{ page_index }},
+	user_id : '{{ __user__.id }}',
+    }, function (err, results) {
+        if (err) {
+            return fatal(err);
+        }
+        initVM(results);
+    });
+});
+</script>
+
+{% endblock %}
+
+{% block style %}{% endblock %}
+
+{% block content %}
+	<div id="vm" class="uk-width-1-1">
+	<h3>历史学习计划</h3>
+        <a href="/personal_study_plane" class="uk-button uk-button-primary"><i class="uk-icon-history"></i> 查看进行时学习计划</a>
+	
+        <table class="uk-table uk-table-hover">
+            <thead>
+                <tr>
+                    <th class="uk-width-2-10">计划标题</th>
+                    <th class="uk-width-2-10">开始时间</th>
+                    <th class="uk-width-2-10">结束时间</th>
+                    <th class="uk-width-2-10">创建时间</th>
+                    <th class="uk-width-1-10">状态</th>
+                    <th class="uk-width-1-10">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-repeat="plane : planes" >
+                    <td>
+                        <span v-text="plane.plane_title"></span>
+                    </td>
+                    <td>
+                        <span v-text="plane.start_time"></span>
+                    </td>
+                    <td>
+                        <span v-text="plane.end_time"></span>
+                    </td>
+                    <td>
+                        <span v-text="plane.created_at.toDateTime()"></span>
+                    </td>
+                    <td>
+                        <span v-text="plane.plane_state"></span>
+                    </td>
+                    <td>
+                        <a href="#0" v-on="click: view_plane(plane)">查看</a>
+                        <a href="#0" v-on="click: delete_plane(plane)">删除</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div v-component="pagination" v-with="page"></div>
+    </div>
+{% endblock %}
