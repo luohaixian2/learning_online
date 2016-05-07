@@ -1,0 +1,51 @@
+{% extends '__personal_base__.html' %}
+
+{% block title %}查看消息{% endblock %}
+
+{% block script %}
+
+{% endblock %}
+
+{% block style %}{% endblock %}
+
+{% block content %}
+	<div class="uk-grid" id="vm">
+		<div class="uk-width-1-4"></div>
+
+		<div class="uk-width-2-4">
+        		<h3 style="text-align:center">查看消息</h3>
+        		<form  class="uk-form uk-form-horizontal uk-form-stacked">
+            			<div class="uk-alert uk-alert-danger uk-hidden"></div>
+
+            			<div class="uk-form-row">
+                			<label class="uk-form-label">消息标题:</label>
+                			<div class="uk-form-controls">
+                    			<span class="uk-width-1-1">{{message.title}}</span>
+                			</div>
+            			</div>
+
+            			<div class="uk-form-row">
+                			<label class="uk-form-label">消息内容:</label>
+                			<div class="uk-form-controls">
+						<span>{{message.content}}</span>
+                			</div>
+            			</div>
+
+            			<div class="uk-form-row">
+                			<label class="uk-form-label">消息时间:</label>
+                			<div class="uk-form-controls">
+                    				<span class="uk-width-1-1">{{message.created_at}}</span>
+                			</div>
+            			</div>
+
+            			<div class="uk-form-row">
+                			<a href="/personal_message/1" class="uk-button uk-button-primary">
+					<i class="uk-icon-user"></i> 返回</a>
+            			</div>
+        		</form>
+
+    		</div>
+
+		<div class="uk-width-1-4"></div>
+    </div>
+{% endblock %}

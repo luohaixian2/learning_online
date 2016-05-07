@@ -71,13 +71,13 @@ def auth_factory(app, handler):
         request.__guide__ = None
         request.__guide_text__ = None
         request.__guide_cur__ = None
-        guide = ('video_manage', 'video_owe', 'video_collection', 'study_plane', 'message')
+        guide = ('personal_video_manage', 'personal_video_owe', 'personal_video_collection', 'personal_study_plane', 'personal_message')
         guide_text = {}
-        guide_text['video_manage'] = '教程管理'
-        guide_text['video_owe'] = '拥有教程'
-        guide_text['video_collection'] = '教程收藏'
-        guide_text['study_plane'] = '学习计划'
-        guide_text['message'] = '我的消息'
+        guide_text['personal_video_manage'] = '教程管理'
+        guide_text['personal_video_owe'] = '拥有教程'
+        guide_text['personal_video_collection'] = '教程收藏'
+        guide_text['personal_study_plane'] = '学习计划'
+        guide_text['personal_message'] = '我的消息'
 		
         cookie_str = request.cookies.get(COOKIE_NAME)
         if cookie_str:
@@ -88,7 +88,14 @@ def auth_factory(app, handler):
                 if request.path.startswith('/personal_'):
                     request.__guide__ = guide
                     request.__guide_text__ = guide_text
-                    request.__guide_cur__ = request.path[request.path.rfind('/')+1:]
+                    temp_cur_guide = request.path[request.path.find('/')+1:request.path.rfind('/')]
+                    if temp_cur_guide == 'personal_video_create':
+                        temp_cur_guide = 'personal_video_manage'
+                    elif temp_cur_guide == 'personal_study_plane' or temp_cur_guide == 'personal_study_plane_create' or temp_cur_guide == 'personal_study_plane_history':
+                        temp_cur_guide = 'personal_study_plane'
+                    request.__guide__ = guide
+                    request.__guide_cur__ = temp_cur_guide
+                    
         #if request.path.startswith('/manage/') and (request.__user__ is None or not request.__user__.admin):
         #    return web.HTTPFound('/signin')
         return (yield from handler(request))

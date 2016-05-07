@@ -5,7 +5,7 @@ import re, time, json, logging, hashlib, base64, asyncio
 
 from web_frame import get, post
 
-from models import User, Video, Video_type_table, Sub_type, Having_video, Collection_video, Study_plane, next_id
+from models import User, Video, Video_type_table, Sub_type, Having_video, Collection_video, Study_plane, Message, next_id
 
 from aiohttp import web
 
@@ -144,58 +144,59 @@ def api_get_lesson(*, video_type, sub_video_type, page='1'):
 def api_user_manage_videos(*, page='1', user_id):
 	page_index = get_page_index(page)
 	num = yield from Video.findNumber('count(*)', where="user_id='"+user_id+"'")
-	p = Page(num, page_index, 10)
+	p = Page(num, page_index, 1)
 	videos = yield from Video.findAll(where="user_id='"+user_id+"'", orderBy="created_at desc", limit=(p.offset, p.limit))
 	return dict(videos=videos, page = p)
 
-@get('/personal_video_manage')
+@get('/personal_video_manage/{page}')
 def personal_video_manage(*, page='1'):
 	return {
 		'__template__' : 'personal_video_manage.html',
 		'page_index' : page
 	}
 
-@get('/personal_video_create')
+@get('/personal_video_create/1')
 def personal_video_create():
 	return {
 		'__template__' : 'personal_video_create.html'
 	}
 
-@get('/personal_study_plane_create')
-def personal_study_plane_create():
-	return {
-		'__template__' : 'personal_study_plane_create.html'
-	}
-
-@get('/personal_video_owe')
-def personal_video_owe():
+@get('/personal_video_owe/{page}')
+def personal_video_owe(*, page='1'):
 	return {
 		'__template__' : 'personal_video_owe.html',
-		'page_index' : '1'
+		'page_index' : page
 	}
 
-@get('/personal_video_collection')
-def personal_video_collection():
+@get('/personal_video_collection/{page}')
+def personal_video_collection(*, page='1'):
 	return {
 		'__template__' : 'personal_video_collection.html',
-		'page_index' : '1'
+		'page_index' : page
 	}
 
-@get('/personal_study_plane')
+@get('/personal_study_plane/{page}')
 def personal_study_plane(*, page='1'):
 	return {
 		'__template__' : 'personal_study_plane.html',
-		'page_index' : '1'
+		'page_index' : page
 	}
 
-@get('/personal_study_plane_history')
-def personal_study_plane_history():
+@get('/personal_message/{page}')
+def personal_message(*, page='1'):
+	return {
+		'__template__' : 'personal_message.html',
+		'page_index' : page
+	}
+
+@get('/personal_study_plane_history/{page}')
+def personal_study_plane_history(*, page='1'):
 	return {
 		'__template__' : 'personal_study_plane_history.html',
-		'page_index' : '1'
+		'page_index' : page
 	}
 
-@get('/personal_study_plane_create')
+@get('/personal_study_plane_create/1')
 def personal_study_plane_create():
         return {
                 '__template__' : 'personal_study_plane_edit.html',
@@ -208,6 +209,15 @@ def personal_study_plane_view(*, id):
         return {
                 '__template__' : 'personal_study_plane_view.html',
                 'id' : id
+        }
+
+@get('/personal_message_view/{id}')
+def personal_message_view(*, id):
+        message = yield from Message.find(id)
+        print('FFFFFFFFFFFFFFFFFFF',message)
+        return {
+                '__template__' : 'personal_message_view.html',
+                'message' : message
         }
 
 @get('/personal_study_plane_edit/{id}')
@@ -263,10 +273,19 @@ def personal_get_video_collection(*, user_id, page='1'):
 def personal_get_study_plane(*, user_id, page='1'):
 	page_index = get_page_index(page)
 	num = yield from Study_plane.findNumber('count(*)', where="user_id='"+user_id+"' and plane_state='ing'")
-	p = Page(num, page_index, 10)
+	p = Page(num, page_index, 1)
 	planes = yield from Study_plane.findAll(where="user_id='"+user_id+"' and plane_state='ing'", orderBy="created_at desc", 
 	limit=(p.offset, p.limit))
 	return dict(planes=planes, page=p)
+
+@get('/personal_get_message')
+def personal_get_message(*, user_id, page='1'):
+	page_index = get_page_index(page)
+	num = yield from Message.findNumber('count(*)', where="recv_id='"+user_id+"'")
+	p = Page(num, page_index, 1)
+	messages = yield from Message.findAll(where="recv_id='"+user_id+"'", orderBy="created_at desc", 
+	limit=(p.offset, p.limit))
+	return dict(messages=messages, page=p)
 
 @get('/personal_get_study_plane_history')
 def personal_get_study_plane_history(*, user_id, page='1'):
@@ -377,6 +396,12 @@ def authenticate(*, email, passwd):
 def personal_collection_delete(*, id):
     video = yield from Collection_video.find(id)
     yield from video.remove()
+    return dict(id=id)
+
+@post('/personal_message/delete/{id}')
+def personal_collection_delete(*, id):
+    message = yield from Message.find(id)
+    yield from message.remove()
     return dict(id=id)
 
 @post('/personal_post_study_plane_create')

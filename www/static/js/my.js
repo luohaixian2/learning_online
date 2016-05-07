@@ -120,7 +120,11 @@ function parseQueryString() {
 
 function gotoPage(i) {
     hre = location.href;
-    location.assign(hre.substring(0, hre.lastIndexOf(','))+','+i);
+    two = hre.lastIndexOf(',');
+    if (two == -1)
+        location.assign(hre.substring(0, hre.lastIndexOf('/')+1)+i);
+    else
+        location.assign(hre.substring(0, hre.lastIndexOf(',')+1)+i);
 }
 
 function refresh() {
@@ -324,7 +328,7 @@ function _httpJSON(method, url, data, callback) {
 }
 
 function getJSON(url, data, callback) {
-    alert('get');
+    //alert('get');
     if (arguments.length===2) {
         callback = data;
         data = {};

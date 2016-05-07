@@ -73,3 +73,12 @@ class Study_plane(Model):
 	start_time = FloatField(default=time.time)
 	end_time = FloatField(default=time.time)
 	created_at = FloatField(default=time.time)
+
+class Message(Model):
+	__table__ = 'messages'
+	
+	id = StringField(primary_key=True, default=next_id, ddl='varchar(50)')
+	recv_id = StringField(ddl='varchar(50)')
+	title = StringField(ddl='varchar(20)')
+	content = StringField(ddl='varchar(200)')
+	created_at = FloatField(default=time.time)
