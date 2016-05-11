@@ -82,3 +82,12 @@ class Message(Model):
 	title = StringField(ddl='varchar(20)')
 	content = StringField(ddl='varchar(200)')
 	created_at = FloatField(default=time.time)
+
+class Advice(Model):
+	__table__ = 'feedbacks_info'
+	
+	id = StringField(primary_key=True, default=next_id, ddl='varchar(50)')
+	user_id = StringField(ddl='varchar(50)')
+	title = StringField(ddl='varchar(20)')
+	content = StringField(ddl='varchar(200)')
+	created_at = FloatField(default=time.time)

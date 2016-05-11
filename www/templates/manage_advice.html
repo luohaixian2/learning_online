@@ -1,0 +1,77 @@
+{% extends '__manage_base__.html' %}
+
+{% block title %}反馈信息管理{% endblock %}
+
+{% block script %}
+<script>
+function initVM(data) {
+    var vm = new Vue({
+        el: '#vm',
+        data: {
+            advices: data.advices,
+            page: data.page
+        },
+        methods: {
+            delete_advice: function (advice) {
+                if (confirm('确认要删除“' + advice.title + '”？删除后不可恢复！')) {
+                    postJSON('/manage_advice_delete/' + advice.id, function (err, r) {
+                        if (err) {
+                            return alert(err.message || err.error || err);
+                        }
+                        refresh();
+                    });
+                }
+            }
+        }
+    });
+    $('#vm').show();
+}
+
+$(function() {
+    getJSON('/manage_get_advice', {
+        page: {{ page_index }}
+    }, function (err, results) {
+        if (err) {
+            return fatal(err);
+        }
+        initVM(results);
+    });
+});
+</script>
+
+{% endblock %}
+
+{% block style %}{% endblock %}
+
+{% block content %}
+	<div id="vm" class="uk-width-1-1">
+        <table class="uk-table uk-table-hover">
+            <thead>
+                <tr>
+                    <th class="uk-width-2-10">信息标题</th>
+                    <th class="uk-width-2-10">信息内容</th>
+                    <th class="uk-width-2-10">创建时间</th>
+                    <th class="uk-width-2-10">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-repeat="advice: advices" >
+                    <td>
+                        <span v-text="advice.title"></span>
+                    </td>
+                    <td>
+                        <span v-text="advice.content"></span>
+                    </td>
+                    <td>
+                        <span v-text="advice.created_at.toDateTime()"></span>
+                    </td>
+                    <td>
+                        <a href="#0" v-on="click: delete_advice(advice)">删除</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div v-component="pagination" v-with="page"></div>
+    </div>
+{% endblock %}

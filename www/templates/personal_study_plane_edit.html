@@ -1,6 +1,6 @@
 {% extends '__personal_base__.html' %}
 
-{% block title %}创建学习计划{% endblock %}
+{% block title %}学习计划{% endblock %}
 
 {% block script %}
 <script>
@@ -13,12 +13,9 @@ function initVM(plane) {
         data: plane,
         methods: {
             submit: function (event) {
-                alert('d');
                 event.preventDefault();
                 var $form = $('#vm').find('form');
-                alert('ddd');
                 $form.postJSON(action, this.$data, function (err, r) {
-                    alert('did');
                     if (err) {
                         $form.showFormError(err);
                     }
@@ -59,22 +56,22 @@ $(function () {
 	<div class="uk-grid">
 		<div class="uk-width-1-4"></div>
 
-		<div class="uk-width-2-4">
-        		<h3 style="text-align:center">创建学习计划</h3>
-        		<form id="vm" v-on="submit: submit" class="uk-form uk-form-horizontal uk-form-stacked">
+		<div id="vm" class="uk-width-2-4">
+        		<h3 style="text-align:center">学习计划</h3>
+        		<form v-on="submit: submit" class="uk-form uk-form-horizontal uk-form-stacked">
             			<div class="uk-alert uk-alert-danger uk-hidden"></div>
 
             			<div class="uk-form-row">
                 			<label class="uk-form-label">计划标题:</label>
                 			<div class="uk-form-controls">
-                    			<input v-model="title" type="text" maxlength="50" placeholder="教程标题" class="uk-width-1-1">
+                    			<input v-model="plane_title" type="text" maxlength="50" placeholder="教程标题" class="uk-width-1-1">
                 			</div>
             			</div>
 
             			<div class="uk-form-row">
                 			<label class="uk-form-label">计划内容:</label>
                 			<div class="uk-form-controls">
-						<textarea v-model="content" cols="50" rows="5" placeholder="计划内容"></textarea>
+						<textarea v-model="plane_content" cols="50" rows="5" placeholder="计划内容"></textarea>
                 			</div>
             			</div>
 
@@ -93,8 +90,8 @@ $(function () {
             			</div>
 
             			<div class="uk-form-row">
-                			<button type="submit" class="uk-button uk-button-primary"><i class="uk-icon-user"></i> 创建</button>
-                			<a href="/personal_study_plane/1" class="uk-button uk-button-primary"><i class="uk-icon-user"></i> 取消</a>
+                			<button type="submit" class="uk-button uk-button-primary"><i class="uk-icon-save"></i> 保存</button>
+                			<a href="/personal_study_plane/1" class="uk-button uk-button-primary"><i class="uk-icon-times"></i> 取消</a>
             			</div>
         		</form>
 

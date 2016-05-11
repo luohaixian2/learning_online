@@ -71,6 +71,11 @@ def auth_factory(app, handler):
         request.__guide__ = None
         request.__guide_text__ = None
         request.__guide_cur__ = None
+
+        request.__manage_guide__ = None
+        request.__manage_guide_text__ = None
+        request.__manage_guide_cur__ = None
+
         guide = ('personal_video_manage', 'personal_video_owe', 'personal_video_collection', 'personal_study_plane', 'personal_message')
         guide_text = {}
         guide_text['personal_video_manage'] = '教程管理'
@@ -78,6 +83,12 @@ def auth_factory(app, handler):
         guide_text['personal_video_collection'] = '教程收藏'
         guide_text['personal_study_plane'] = '学习计划'
         guide_text['personal_message'] = '我的消息'
+
+        manage_guide = ('manage_user', 'manage_video', 'manage_advice')
+        manage_guide_text = {}
+        manage_guide_text['manage_user'] = '用户管理'
+        manage_guide_text['manage_video'] = '教程管理'
+        manage_guide_text['manage_advice'] = '反馈信息管理'
 		
         cookie_str = request.cookies.get(COOKIE_NAME)
         if cookie_str:
@@ -96,6 +107,12 @@ def auth_factory(app, handler):
                     request.__guide__ = guide
                     request.__guide_cur__ = temp_cur_guide
                     
+                if request.path.startswith('/manage_'):
+                    request.__manage_guide__ = manage_guide
+                    request.__manage_guide_text__ = manage_guide_text
+                    temp_cur_guide = request.path[request.path.find('/')+1:request.path.rfind('/')]
+                    request.__manage_guide__ = manage_guide
+                    request.__manage_guide_cur__ = temp_cur_guide
         #if request.path.startswith('/manage/') and (request.__user__ is None or not request.__user__.admin):
         #    return web.HTTPFound('/signin')
         return (yield from handler(request))
@@ -125,6 +142,9 @@ def response_factory(app, handler):
             r['__guide__'] = request.__guide__
             r['__guide_text__'] = request.__guide_text__
             r['__guide_cur__'] = request.__guide_cur__
+            r['__manage_guide__'] = request.__manage_guide__
+            r['__manage_guide_text__'] = request.__manage_guide_text__
+            r['__manage_guide_cur__'] = request.__manage_guide_cur__
             template = r.get('__template__')
             if template is None:
                 resp = web.Response(body=json.dumps(r, ensure_ascii=False, default=lambda o: o.__dict__).encode('utf-8'))

@@ -16,11 +16,11 @@ function initVM(data) {
                 location.assign('/personal_study_plane_view/'+plane.id);
             },
             edit_plane: function (plane) {
-                location.assign('/personal_plane_edit/' + plane.id);
+                location.assign('/personal_study_plane_edit/' + plane.id);
             },
             delete_plane: function (plane) {
-                if (confirm('确认要删除“' + plane.name + '”？删除后不可恢复！')) {
-                    postJSON('/personal_plane_delete/'+video.id, function (err, r) {
+                if (confirm('确认要删除“' + plane.plane_title + '”？删除后不可恢复！')) {
+                    postJSON('/personal_study_plane_delete/'+plane.id, function (err, r) {
                         if (err) {
                             return alert(err.message || err.error || err);
                         }

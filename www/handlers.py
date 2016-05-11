@@ -5,7 +5,7 @@ import re, time, json, logging, hashlib, base64, asyncio
 
 from web_frame import get, post
 
-from models import User, Video, Video_type_table, Sub_type, Having_video, Collection_video, Study_plane, Message, next_id
+from models import User, Video, Video_type_table, Sub_type, Having_video, Collection_video, Study_plane, Message, Advice, next_id
 
 from aiohttp import web
 
@@ -214,18 +214,38 @@ def personal_study_plane_view(*, id):
 @get('/personal_message_view/{id}')
 def personal_message_view(*, id):
         message = yield from Message.find(id)
-        print('FFFFFFFFFFFFFFFFFFF',message)
         return {
                 '__template__' : 'personal_message_view.html',
                 'message' : message
         }
 
 @get('/personal_study_plane_edit/{id}')
-def edit_blogs(*, id):
+def personal_study_plane_edit(*, id):
         return {
                 '__template__' : 'personal_study_plane_edit.html',
                 'id' : id,
                 'action' : '/personal_post_study_plane_edit/%s' % id
+        }
+
+@get('/manage_user/{page}')
+def manage_user(*, page='1'):
+        return {
+                '__template__' : 'manage_user.html',
+                'page_index' : page
+        }
+
+@get('/manage_advice/{page}')
+def manage_advice(*, page='1'):
+        return {
+                '__template__' : 'manage_advice.html',
+                'page_index' : page
+        }
+
+@get('/manage_video/{page}')
+def manage_video(*, page='1'):
+        return {
+                '__template__' : 'manage_video.html',
+                'page_index' : page
         }
 
 @get('/personal_get_video_owe')
@@ -295,6 +315,30 @@ def personal_get_study_plane_history(*, user_id, page='1'):
 	planes = yield from Study_plane.findAll(where="user_id='"+user_id+"' and plane_state!='ing'", orderBy="created_at desc", 
 	limit=(p.offset, p.limit))
 	return dict(planes=planes, page=p)
+
+@get('/manage_get_user')
+def manage_get_user(*, page='1'):
+	page_index = get_page_index(page)
+	num = yield from User.findNumber('count(*)')
+	p = Page(num, page_index, 1)
+	users = yield from User.findAll(orderBy="created_at desc", limit=(p.offset, p.limit))
+	return dict(users=users, page=p)
+
+@get('/manage_get_video')
+def manage_get_video(*, page='1'):
+	page_index = get_page_index(page)
+	num = yield from Video.findNumber('count(*)')
+	p = Page(num, page_index, 1)
+	videos = yield from Video.findAll(orderBy="created_at desc", limit=(p.offset, p.limit))
+	return dict(videos=videos, page=p)
+
+@get('/manage_get_advice')
+def manage_get_advice(*, page='1'):
+	page_index = get_page_index(page)
+	num = yield from Advice.findNumber('count(*)')
+	p = Page(num, page_index, 1)
+	advices = yield from Advice.findAll(orderBy="created_at desc", limit=(p.offset, p.limit))
+	return dict(advices=advices, page=p)
 
 @get('/personal_get_study_plane_edit/{id}')
 def personal_get_study_plane_edit(*, id):
@@ -398,46 +442,69 @@ def personal_collection_delete(*, id):
     yield from video.remove()
     return dict(id=id)
 
+@post('/manage_user_delete/{id}')
+def manage_user_delete(*, id):
+    user = yield from User.find(id)
+    yield from user.remove()
+    return dict(id=id)
+
+@post('/manage_video_delete/{id}')
+def manage_video_delete(*, id):
+    video = yield from Video.find(id)
+    yield from video.remove()
+    return dict(id=id)
+
+@post('/manage_advice_delete/{id}')
+def manage_advice_delete(*, id):
+    advice = yield from Advice.find(id)
+    yield from advice.remove()
+    return dict(id=id)
+
 @post('/personal_message/delete/{id}')
 def personal_collection_delete(*, id):
     message = yield from Message.find(id)
     yield from message.remove()
     return dict(id=id)
 
+@post('/personal_study_plane_delete/{id}')
+def personal_study_plane_delete(*, id):
+    plane = yield from Study_plane.find(id)
+    yield from plane.remove()
+    return dict(id=id)
+
 @post('/personal_post_study_plane_create')
-def personal_post_study_plane_create(request, *, title, content, start_time, end_time):
+def personal_post_study_plane_create(request, *, plane_title, plane_content, start_time, end_time):
     print('HHHHHHHHHHHHHHH')
     #检查是否是管理员操作，用user中的admin属性
     #check_admin(request)
-    if not title or not title.strip():
+    if not plane_title or not plane_title.strip():
         raise APIValueError('title', 'title cannot be empty.')
-    if not content or not content.strip():
+    if not plane_content or not plane_content.strip():
         raise APIValueError('content', 'content cannot be empty.')
     if not start_time or not start_time.strip():
         raise APIValueError('start_time', 'start_time cannot be empty.')
-    plane = Study_plane(user_id=request.__user__.id, plane_title=title.strip(), plane_content=content.strip(), plane_state='ing', start_time=start_time.strip(), end_time=end_time.strip())
+    plane = Study_plane(user_id=request.__user__.id, plane_title=plane_title.strip(), plane_content=plane_content.strip(), plane_state='ing', start_time=start_time.strip(), end_time=end_time.strip())
     yield from plane.save()
     return plane
 
 @post('/personal_post_study_plane_edit/{id}')
-def api_update_blog(id, request, *, title, content, start_time, end_time):
+def personal_post_study_plane_edit(id, request, *, plane_title, plane_content, start_time, end_time):
     #check_admin(request)
     plane = yield from Study_plane.find(id)
-    if not title or not title.strip():
+    if not plane_title or not plane_title.strip():
         raise APIValueError('title', 'title cannot be empty.')
-    if not content or not content.strip():
+    if not plane_content or not plane_content.strip():
         raise APIValueError('content', 'content cannot be empty.')
-    if not start_time or not start_time.strip():
+    if not start_time:
         raise APIValueError('start_time', 'start_time cannot be empty.')
-    if not end_time or not end_time.strip():
+    if not end_time:
         raise APIValueError('end_time', 'end_time cannot be empty.')
-    plane.plane_title = title.strip()
-    plane.plane_content = content.strip()
-    plane.start_time = start_time.strip()
-    plane.end_time = end_time.strip()
+    plane.plane_title = plane_title.strip()
+    plane.plane_content = plane_content.strip()
+    plane.start_time = start_time
+    plane.end_time = end_time
     yield from plane.update()
     return plane
-
 
 #----------------------------------------------------
 def check_admin(request):

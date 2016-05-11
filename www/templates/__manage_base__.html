@@ -1,0 +1,71 @@
+<html>
+<head>
+<meta charset="utf-8">
+{% block meta %}<!-- block meta  -->{% endblock %}
+<title>{% block title %} ? {% endblock %} - 后台管理</title>
+<link rel="stylesheet" href="../static/css/uikit.min.css">
+<link rel="stylesheet" href="../static/css/uikit.gradient.min.css">
+<link rel="stylesheet" href="../static/css/my.css">
+<link rel="stylesheet" href="../static/css/uikit.docs.min.css">
+<link rel="stylesheet" href="../static/css/docs.css">
+<link rel="stylesheet" href="../static/css/highlight.css">
+<script src="../static/js/jquery.min.js"></script>
+<script src="../static/js/sha1.min.js"></script>
+<script src="../static/js/uikit.min.js"></script>
+<script src="../static/js/sticky.min.js"></script>
+<script src="../static/js/vue.min.js"></script>
+<script src="../static/js/my.js"></script>
+{% block script %}
+{% endblock %}
+{% block style %}{% endblock %}
+</head>
+<body>
+
+	<div id="vm2" style = "margin:20px">
+		<div class="uk-grid" style="margin-top:50px;margin-bottom:50px">
+			<div class="uk-width-3-4">
+				<div class="title_font">后台管理系统</div>
+			</div>
+			<div class="uk-width-1-4" style="text-align:right">
+                			{% if __user__ %}
+                    			<div class="uk-button-dropdown" data-uk-dropdown="">
+						<button class="uk-button uk-button-primary"><i class="uk-icon-user"></i>
+						 {{__user__.name}}</button>
+						<div style="" class="uk-dropdown">
+                                       			<ul class="uk-nav uk-nav-dropdown">
+                                            			<li><a href="/signout">登出</a></li>
+                                        		</ul>
+                                    		</div>
+
+                    			</div>
+                			{% else %}
+                    			<span class="margin_right_small"><a href="/signin"><i class="uk-icon-sign-in"></i> 登陆</a></span>
+                    			<span><a href="/register"><i class="uk-icon-edit"></i> 注册</a></span>
+                			{% endif %}
+
+			</div>	
+		</div>
+
+		<div style="margin-bottom:20px">
+			<nav class="tm-navbar uk-navbar uk-navbar-attached">
+                		<ul class="uk-navbar-nav uk-hidden-small">
+					{% for manage_guide in __manage_guide__ %}
+						{% if manage_guide == __manage_guide_cur__ %}
+                    					<li class="uk-active"><a href="/{{manage_guide}}/1">{{__manage_guide_text__[manage_guide]}}</a></li>
+						{% else %}
+                    					<li><a href="/{{manage_guide}}/1">{{__manage_guide_text__[manage_guide]}}</a></li>
+						{% endif %}
+					{% endfor %}
+                		</ul>
+
+                		<a href="#tm-offcanvas" class="uk-navbar-toggle uk-visible-small" data-uk-offcanvas=""></a>
+       			</nav>
+		</div>
+		
+		<!-- content -->
+		{% block content %}
+		{% endblock %}
+		<!-- // content -->
+	</div>
+</body>
+</html>
