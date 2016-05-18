@@ -111,15 +111,28 @@ create table logs_info (
     primary key (`id`)
 ) engine=innodb default charset=utf8;
 
+/*类型*/
 create table video_type_table (
     `video_type` varchar(20) not null,
     `video_type_text` varchar(20) not null,
     primary key (`video_type`)
 ) engine=innodb default charset=utf8;
 
+/*子类型*/
 create table sub_type (
     `video_type` varchar(20) not null,
     `sub_video_type` varchar(20) not null,
     `sub_video_type_text` varchar(20) not null,
     primary key (`sub_video_type`)
+) engine=innodb default charset=utf8;
+
+/*子视频信息表*/
+create table sub_video (
+    `id` varchar(50) not null,
+    `parent_video_id` varchar(50) not null,
+    `title` varchar(50) not null,
+    `video_path` varchar(300) not null,
+    `num` int not null,
+    `created_at` real not null,
+    primary key (`id`)
 ) engine=innodb default charset=utf8;

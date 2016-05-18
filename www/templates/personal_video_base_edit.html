@@ -1,16 +1,18 @@
 {% extends '__personal_base__.html' %}
 
-{% block title %}创建教程{% endblock %}
+{% block title %}教程信息修改{% endblock %}
 
 {% block script %}
 <script>
 function initVM(data) {
+	var all_video_type = data.all_video_type;
+	var all_sub_type = data.all_sub_type;
+	var video = data.video;
+	var video_type = video.video_type;
+	var sub_video_type = video.sub_video_type;
         var vm = new Vue({
                 el: '#vm',
-                data: {
-			all_video_type:data.all_video_type,
-			all_sub_type:data.all_sub_type
-                },
+                data: data.video,
                 methods: {
 			type_change: function() {
 				$('#sub_video_type').empty();
@@ -23,7 +25,7 @@ function initVM(data) {
 			submit: function(event) {
 				event.preventDefault();
 				var $form = $('#vm').find('form');
-                		$form.postJSON('/personal_post_video_create', this.$data, function (err, r) {
+				$form.postJSON('/personal_post_video_edit/'+data.video.id, data.video, function (err, r) {
                    			if (err) {
                         			$form.showFormError(err);
                     			}
@@ -35,11 +37,41 @@ function initVM(data) {
 			}
                 }
         });
-	$('#sub_video_type').append("<option value='all_all'>全部</option>");
+	var vm2 = new Vue({
+		el: '#vm2',
+		data: {
+			video: data.video
+		},
+		methods: {
+		
+		}
+	});
+	
+	for(var i = 0; i < all_video_type.length; i++) {
+		if(all_video_type[i].video_type == video_type) {
+			$('#video_type').append("<option selected='selected' value="+all_video_type[i].video_type+">"+
+			all_video_type[i].video_type_text+"</option>");
+		}
+		else {
+			$('#video_type').append("<option value="+all_video_type[i].video_type+">"+
+			all_video_type[i].video_type_text+"</option>");
+		}
+	}
+
+	for(var i = 0; i < all_sub_type[video_type].length; i++) {
+		if(all_sub_type[video_type][i].sub_video_type == sub_video_type) {
+			$('#sub_video_type').append("<option selected='selected' value="+all_sub_type[video_type][i].sub_video_type+">"+
+			all_sub_type[video_type][i].sub_video_type_text+"</option>");
+		}
+		else {
+			$('#sub_video_type').append("<option value="+all_sub_type[video_type][i].sub_video_type+">"+
+			all_sub_type[video_type][i].sub_video_type_text+"</option>");
+		}
+	}
 };
 
 $(function() {
-    getJSON('/personal_get_video_create', function (err, results) {
+    getJSON('/personal_get_video_edit/{{ parent_video_id  }}', function (err, results) {
         if (err) {
             return fatal(err);
         }
@@ -58,10 +90,28 @@ $(function() {
 	<div class="uk-grid">
 		<div class="uk-width-1-4"></div>
 
-		<div id="vm" class="uk-width-2-4">
+		<div class="uk-width-2-4">
         		<h3 style="text-align:center">上传教程</h3>
-        		<form v-on="submit: submit" class="uk-form uk-form-horizontal uk-form-stacked">
+			<form id="vm2" class="uk-form uk-form-stacked" method="post" 
+			v-attr="action:'/personal_post_pic_upload/'+video.id" enctype="multipart/form-data">
+            			<div class="uk-form-row">
+                			<label class="uk-form-label">上传封面图片:</label>
+                			<div class="uk-form-controls">
+                				<input type="file" name="test">
+                				<button class="uk-button-primary" type="submit">上传</button>
+                			</div>
+            			</div>
+        		</form>
+			<div id="vm">
+        		<form  v-on="submit: submit" class="uk-form uk-form-horizontal uk-form-stacked">
             			<div class="uk-alert uk-alert-danger uk-hidden"></div>
+				
+            			<div class="uk-form-row">
+                			<label class="uk-form-label">教程封面图片:</label>
+                			<div class="uk-form-controls">
+						<img v-attr="src:pic_path" />
+                			</div>
+            			</div>
 
             			<div class="uk-form-row">
                 			<label class="uk-form-label">教程名:</label>
@@ -74,8 +124,8 @@ $(function() {
                 			<label class="uk-form-label">教程类型:</label>
                 			<div class="uk-form-controls">
                     				<select id="video_type" v-model="video_type" v-on="change:type_change()">
-							<option v-repeat="item:all_video_type" v-text="item.video_type_text" 
-							v-attr="value:item.video_type"></option>
+							<!--<option v-repeat="item:all_video_type" v-text="item.video_type_text" 
+							v-attr="value:item.video_type"></option>-->
 						</select>
                 			</div>
             			</div>
@@ -110,11 +160,12 @@ $(function() {
                 			</div>
             			</div>
             			<div class="uk-form-row">
-                			<button type="submit" class="uk-button uk-button-primary"><i class="uk-icon-save"></i> 创建</button>
+                			<button type="submit" class="uk-button uk-button-primary"><i class="uk-icon-save"></i> 保存</button>
 					<a href="/personal_video_manage/1" class="uk-button uk-button-primary"><i class="uk-icon-times"></i> 取消</a>
 
             			</div>
         		</form>
+			</div>
 
     		</div>
 

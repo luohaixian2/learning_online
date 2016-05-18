@@ -1,0 +1,101 @@
+{% extends '__personal_base__.html' %}
+
+{% block title %}上传视频{% endblock %}
+
+{% block script %}
+<script>
+
+function initVM(data) {
+        var vm = new Vue({
+                el: '#vm',
+                data: {
+			video:data
+                },
+                methods: {/*
+			type_change: function() {
+				$('#sub_video_type').empty();
+				var chose = $('#video_type').val();
+				for(var i = 0; i < data.all_sub_type[chose].length; i++) {
+					$('#sub_video_type').append("<option value="+data.all_sub_type[chose][i].sub_video_type+">"+
+					data.all_sub_type[chose][i].sub_video_type_text+"</option>");
+				}
+			},
+			submit: function(event) {
+				event.preventDefault();
+				var $form = $('#vm').find('form');
+                		$form.postJSON('/personal_post_video_create', this.$data, function (err, r) {
+                   			if (err) {
+                        			$form.showFormError(err);
+                    			}
+                    			else {
+                        			//return location.assign('/personal_video_edit/' + r.id);
+                        			return location.assign('/personal_video_manage/1');
+                    			}
+               			});
+			}*/
+                }
+        });
+	for(var i = 1; i <= data.dir_num; i++) {
+		$('#num').append("<option value='"+i+"'>"+i+"</option>");
+	}
+};
+
+$(function() {
+    getJSON('/personal_get_video/'+'{{ parent_video_id  }}', function (err, results) {
+        if (err) {
+            return fatal(err);
+        }
+        initVM(results);
+    });
+});
+
+</script>
+
+
+{% endblock %}
+
+{% block style %}{% endblock %}
+
+{% block content %}
+	<div class="uk-grid">
+		<div class="uk-width-1-4"></div>
+
+		<div id="vm" class="uk-width-2-4">
+        		<h3 style="text-align:center">上传视频</h3>
+			<form class="uk-form uk-form-horizontal uk-form-stacked" method="post" 
+                        v-attr="action:'/personal_post_sub_video_upload/'+video.id" enctype="multipart/form-data">
+            			<div class="uk-alert uk-alert-danger uk-hidden"></div>
+
+            			<div class="uk-form-row">
+                			<label class="uk-form-label">视频标题:</label>
+                			<div class="uk-form-controls">
+                    			<input type="text" name="title"  maxlength="50" placeholder="子视频标题" class="uk-width-1-1">
+                			</div>
+            			</div>
+
+            			<div class="uk-form-row">
+                			<label class="uk-form-label">视频章节:</label>
+                			<div class="uk-form-controls">
+                    				<select id="num" name="num">
+						</select>
+                			</div>
+            			</div>
+
+                                <div class="uk-form-row">
+                                        <label class="uk-form-label">上传视频:</label>
+                                        <div class="uk-form-controls">
+                                                <input type="file" name="test">
+                                                <!--<button class="uk-button-primary" type="submit">上传</button>-->
+                                        </div>
+                                </div>
+
+            			<div class="uk-form-row">
+                			<button type="submit" class="uk-button uk-button-primary"><i class="uk-icon-save"></i> 确定</button>
+					<a v-attr="href:'/personal_video_edit/'+video.id+',1'" class="uk-button uk-button-primary"><i class="uk-icon-times"></i> 取消</a>
+            			</div>
+        		</form>
+    		</div>
+
+		<div class="uk-width-1-4"></div>
+    </div>
+{% endblock %}

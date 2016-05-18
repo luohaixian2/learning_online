@@ -5,7 +5,7 @@ import re, time, json, logging, hashlib, base64, asyncio
 
 from web_frame import get, post
 
-from models import User, Video, Video_type_table, Sub_type, Having_video, Collection_video, Study_plane, Message, Advice, next_id
+from models import User, Video, Video_type_table, Sub_type, Having_video, Collection_video, Study_plane, Message, Advice, Sub_video, next_id
 
 from aiohttp import web
 
@@ -14,6 +14,10 @@ from apis import APIValueError, APIError, APIPermissionError, Page
 from config import configs
 
 import markdown2
+
+import os
+
+import io
 
 COOKIE_NAME = 'awesession'
 _COOKIE_KEY = configs.session.secret
@@ -144,7 +148,7 @@ def api_get_lesson(*, video_type, sub_video_type, page='1'):
 def api_user_manage_videos(*, page='1', user_id):
 	page_index = get_page_index(page)
 	num = yield from Video.findNumber('count(*)', where="user_id='"+user_id+"'")
-	p = Page(num, page_index, 1)
+	p = Page(num, page_index, 10)
 	videos = yield from Video.findAll(where="user_id='"+user_id+"'", orderBy="created_at desc", limit=(p.offset, p.limit))
 	return dict(videos=videos, page = p)
 
@@ -219,12 +223,30 @@ def personal_message_view(*, id):
                 'message' : message
         }
 
+@get('/personal_sub_video_view/{sub_video_id}')
+def personal_sub_video_view(*, sub_video_id):
+        sub_video = yield from Sub_video.find(sub_video_id)
+        video = yield from Video.find(sub_video.parent_video_id)
+        return {
+                '__template__' : 'personal_sub_video_view.html',
+                'parent_video_name' : video.name,
+                'sub_video' : sub_video
+        }
+
 @get('/personal_study_plane_edit/{id}')
 def personal_study_plane_edit(*, id):
         return {
                 '__template__' : 'personal_study_plane_edit.html',
                 'id' : id,
                 'action' : '/personal_post_study_plane_edit/%s' % id
+        }
+
+@get('/personal_video_edit/{video_id},{page}')
+def personal_video_edit(*, video_id, page='1'):
+        return {
+                '__template__' : 'personal_video_edit.html',
+                'parent_video_id' : video_id,
+		'page_index' : page
         }
 
 @get('/manage_user/{page}')
@@ -247,6 +269,15 @@ def manage_video(*, page='1'):
                 '__template__' : 'manage_video.html',
                 'page_index' : page
         }
+
+@get('/personal_get_video_create')
+def personal_get_video_create():
+	all_video_type = yield from Video_type_table.findAll()
+	all_sub_type = {}
+	for big_type in all_video_type:
+		sub_type = yield from Sub_type.findAll(where="video_type='"+big_type.video_type+"'")
+		all_sub_type[big_type.video_type] = sub_type
+	return dict(all_video_type=all_video_type, all_sub_type=all_sub_type)
 
 @get('/personal_get_video_owe')
 def personal_get_video_owe(*, user_id, page='1'):
@@ -298,6 +329,15 @@ def personal_get_study_plane(*, user_id, page='1'):
 	limit=(p.offset, p.limit))
 	return dict(planes=planes, page=p)
 
+@get('/personal_get_sub_video')
+def personal_get_sub_video(*, parent_video_id, page='1'):
+	page_index = get_page_index(page)
+	num = yield from Sub_video.findNumber('count(*)', where="parent_video_id='"+parent_video_id+"'")
+	p = Page(num, page_index, 1)
+	sub_videos = yield from Sub_video.findAll(where="parent_video_id='"+parent_video_id+"'", orderBy="num", 
+	limit=(p.offset, p.limit))
+	return dict(sub_videos=sub_videos, page=p)
+
 @get('/personal_get_message')
 def personal_get_message(*, user_id, page='1'):
 	page_index = get_page_index(page)
@@ -319,7 +359,6 @@ def personal_get_study_plane_history(*, user_id, page='1'):
 @get('/manage_get_user')
 def manage_get_user(*, page='1'):
 	page_index = get_page_index(page)
-	num = yield from User.findNumber('count(*)')
 	p = Page(num, page_index, 1)
 	users = yield from User.findAll(orderBy="created_at desc", limit=(p.offset, p.limit))
 	return dict(users=users, page=p)
@@ -345,6 +384,38 @@ def personal_get_study_plane_edit(*, id):
     plane = yield from Study_plane.find(id)
     return plane
 
+@get('/personal_get_video/{video_id}')
+def personal_get_video(*, video_id):
+    video = yield from Video.find(video_id)
+    return video
+
+@get('/personal_video_base_edit/{parent_video_id}')
+def personal_video_base_edit(*, parent_video_id):
+    return {
+        '__template__': 'personal_video_base_edit.html',
+        'parent_video_id' : parent_video_id
+    }
+
+@get('/personal_sub_video_upload/{parent_video_id}')
+def personal_sub_video_upload(*, parent_video_id):
+    return {
+        '__template__': 'personal_sub_video_upload.html',
+        'parent_video_id' : parent_video_id
+    }
+
+@get('/personal_get_video_edit/{video_id}')
+def personal_get_video_edit(*, video_id):
+    video = yield from Video.find(video_id)
+    all_video_type = yield from Video_type_table.findAll()
+    all_sub_type = {}
+    for big_type in all_video_type:
+        sub_type = yield from Sub_type.findAll(where="video_type='"+big_type.video_type+"'")
+        all_sub_type[big_type.video_type] = sub_type
+    return {
+        'video' : video,
+        'all_video_type' : all_video_type,
+        'all_sub_type' : all_sub_type
+    }
 
 @get('/detail_lesson/{id}')
 def get_video(*, id):
@@ -363,6 +434,35 @@ def video(*, id):
 }
 
 @get('/test')
+def test():
+	return {
+		'__template__' : 'test.html'
+	}
+
+@get('/personal_file_upload_test')
+def personal_file_upload_test():
+	return {
+	'__template__' : 'personal_file_upload_test.html'
+}
+
+@post('/personal_post_file_upload_test')
+def personal_post_file_upload_test(request,*,test):
+	print("file have been revRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
+	io_file = test.file
+	data = io_file.read()
+	os.chdir('/home/luohaixian/software/myproject/learning_online/www/templates')
+	name = 'eee'
+	path = '../static/video/'+request.__user__.email+'/'+name+'/test'
+	print(path)
+	f = open(path,'wb')
+	#while True:
+	#	chunk = io_file.read()
+	#	if not chunk:
+	#		break
+	#	f.write(chunk)
+	f.write(data)
+	f.close()
+
 def test():
 	return {
 		'__template__' : 'test.html'
@@ -472,9 +572,29 @@ def personal_study_plane_delete(*, id):
     yield from plane.remove()
     return dict(id=id)
 
+@post('/personal_video_delete/{video_id}')
+def personal_video_delete(request, *, video_id):
+    video = yield from Video.find(video_id)
+    if video:
+        yield from video.remove()
+    path = '../static/video/'+request.__user__.email+'/'+video_id+'/'
+    os.chdir('/home/luohaixian/software/myproject/learning_online/www/templates')
+    os.system('rm -r '+path)
+    return dict(video_id=video_id)
+
+@post('/personal_sub_video_delete/{sub_video_id}')
+def personal_sub_video_delete(request, *, sub_video_id):
+    sub_video = yield from Sub_video.find(sub_video_id)
+    path = '../static/video/'+request.__user__.email+'/'+sub_video.parent_video_id+'/'+str(sub_video.num)+'.mp4'
+    print(path)
+    if sub_video:
+        yield from sub_video.remove()
+    os.chdir('/home/luohaixian/software/myproject/learning_online/www/templates')
+    os.system('rm '+path)
+    return dict(sub_video_id=sub_video_id)
+
 @post('/personal_post_study_plane_create')
 def personal_post_study_plane_create(request, *, plane_title, plane_content, start_time, end_time):
-    print('HHHHHHHHHHHHHHH')
     #检查是否是管理员操作，用user中的admin属性
     #check_admin(request)
     if not plane_title or not plane_title.strip():
@@ -486,6 +606,30 @@ def personal_post_study_plane_create(request, *, plane_title, plane_content, sta
     plane = Study_plane(user_id=request.__user__.id, plane_title=plane_title.strip(), plane_content=plane_content.strip(), plane_state='ing', start_time=start_time.strip(), end_time=end_time.strip())
     yield from plane.save()
     return plane
+
+@post('/personal_post_video_create')
+def personal_post_video_create(request, *, name, video_type, sub_video_type, price, dir_num, describe):
+    if not name or not name.strip():
+        raise APIValueError('name', 'name cannot be empty.')
+    if not video_type or not video_type.strip():
+        raise APIValueError('video_type', 'video_type cannot be empty.')
+    if not sub_video_type or not sub_video_type.strip():
+        raise APIValueError('sub_video_type', 'sub_video_type cannot be empty.')
+    if not describe or not describe.strip():
+        raise APIValueError('describe', 'describe cannot be empty.')
+    video = Video(name=name.strip(), video_type=video_type.strip(), sub_video_type=sub_video_type.strip(), pic_path='null', video_path='null', describe=describe.strip(), user_id=request.__user__.id, price=price, dir_num=dir_num, people_num=0)
+    yield from video.save()
+    #these code is not strong,should be use subprocess
+    path = '../static/video/'+request.__user__.email+'/'+video.id+'/'
+    pic_path = path + 'video_pic'
+    video_path = path + '1.mp4'
+    video.pic_path = pic_path
+    video.video_path = video_path
+    yield from video.update()
+    os.chdir('/home/luohaixian/software/myproject/learning_online/www/templates')
+    os.system('mkdir '+path)
+    os.system('cp ../static/src/test.png '+pic_path)
+    return video
 
 @post('/personal_post_study_plane_edit/{id}')
 def personal_post_study_plane_edit(id, request, *, plane_title, plane_content, start_time, end_time):
@@ -506,6 +650,73 @@ def personal_post_study_plane_edit(id, request, *, plane_title, plane_content, s
     yield from plane.update()
     return plane
 
+@post('/personal_post_video_edit/{id}')
+def personal_post_study_plane_edit(id, request, *, name, video_type, sub_video_type, price, dir_num, describe):
+    #check_admin(request)
+    video = yield from Video.find(id)
+    if not name or not name.strip():
+        raise APIValueError('name', 'name cannot be empty.')
+    if not video_type or not video_type.strip():
+        raise APIValueError('video_type', 'video_type cannot be empty.')
+    if not sub_video_type or not sub_video_type.strip():
+        raise APIValueError('sub_video_type', 'sub_video_type cannot be empty.')
+    if not describe or not describe.strip():
+        raise APIValueError('video_type', 'video_type cannot be empty.')
+    if not price:
+        raise APIValueError('price', 'price cannot be empty.')
+    if not dir_num:
+        raise APIValueError('dir_num', 'dir_num cannot be empty.')
+    video.name = name.strip()
+    video.video_type = video_type.strip()
+    video.sub_video_type = sub_video_type
+    video.price = price
+    video.dir_num = dir_num
+    video.describe = describe
+    yield from video.update()
+    return video
+
+@post('/personal_post_pic_upload/{video_id}')
+def personal_post_pic_upload(request,*,video_id,test):
+	print("file have been revRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
+	print(video_id)
+	io_file = test.file
+	data = io_file.read()
+	os.chdir('/home/luohaixian/software/myproject/learning_online/www/templates')
+	path = '../static/video/'+request.__user__.email+'/'+video_id+'/video_pic'
+	f = open(path,'wb')
+	#while True:
+	#	chunk = io_file.read()
+	#	if not chunk:
+	#		break
+	#	f.write(chunk)
+	f.write(data)
+	f.close()
+	return {
+        	'__template__': 'personal_video_base_edit.html',
+        	'parent_video_id' : video_id
+	}
+
+@post('/personal_post_sub_video_upload/{video_id}')
+def personal_post_sub_video_upload(request,*,video_id,test,num,title):
+	print("file have been revRRRRROOOOOOOOOOOOOOOOOOOOOORRRRR")
+	print(video_id,title,num,test)
+	io_file = test.file
+	data = io_file.read()
+	os.chdir('/home/luohaixian/software/myproject/learning_online/www/templates')
+	path = '../static/video/'+request.__user__.email+'/'+video_id+'/'+num+'.mp4'
+	f = open(path,'wb')
+	f.write(data)
+	f.close()
+	if not title or not title.strip():
+        	raise APIValueError('title', 'title cannot be empty.')
+	if not num:
+		raise APIValueError('num', 'num cannot be empty.')
+	sub_video = Sub_video(parent_video_id=video_id, title=title.strip(), video_path=path, num=num)
+	yield from sub_video.save()
+	return {
+        	'__template__': 'personal_video_edit.html',
+        	'parent_video_id' : video_id
+	}
 #----------------------------------------------------
 def check_admin(request):
     #print('Request.__user_: _' , request.__user__)

@@ -91,3 +91,13 @@ class Advice(Model):
 	title = StringField(ddl='varchar(20)')
 	content = StringField(ddl='varchar(200)')
 	created_at = FloatField(default=time.time)
+
+class Sub_video(Model):
+	__table__ = 'sub_video'
+	
+	id = StringField(primary_key=True, default=next_id, ddl='varchar(50)')
+	parent_video_id = StringField(ddl='varchar(50)')
+	title = StringField(ddl='varchar(50)')
+	video_path = StringField(ddl='varchar(300)')
+	num = StringField(ddl='int')
+	created_at = FloatField(default=time.time)
