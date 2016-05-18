@@ -1,0 +1,30 @@
+jQuery-File-Upload插件
+用html5的file api里的readAsDataURL函数 这是一个把文件转化成base64编码的
+如果只是传递单个文件，那么将数据流POST给服务器端即可
+http multipart
+
+video表可以加个作者属性，去掉video_path这个属性，寻找视频采用video_id和第几章节两个来锁定子视频，
+
+videos表中插入测试语句：
+insert into videos values('12ee', 'dd', 'it', 'c', '../static/video/13750406862@163.com/1234/test.png', '../static/video/13750406862@163.com/1234/movie1.mp4', 'that is good', '1233', 0, 22, 2, 30);
+
+插入类型数据：
+insert into video_type_table values('all', '全部'),('it', 'IT互联网'),('work_skill', '职场技能'),('language', '语言学习'),('hobby', '兴趣爱好');
+
+insert into sub_type values('all', 'all_all', '全部'),('it', 'it_all', '全部'),('it', 'it_program_language', '编程语言'),('it', 'it_mobie_develop', '移动开发'),('it', 'it_web_evelop', 'Web 开发'),('it', 'it_design', '设计制作'),('it', 'it_network_marketing', '网络营销'),('it', 'it_database', '数据库'),('it', 'it_product_planning', '产品策划'),('it', 'it_product_operation', '产品运营'),('it', 'it_operating_system', '操作系统'),('it', 'it_software_test', '软件测试'),('it', 'it_network_technique', '网络技术'),('it', 'it_hardword_develop', '硬件开发'),('it', 'it_other', '其它'),('hobby', 'hobby_all', '全部'),('hobby', 'hobby_physical', '体育健身'),('hobby', 'hobby_photography', '摄影摄像'),('hobby', 'hobby_music', '声乐器乐'),('hobby', 'hobby_food', '美食烹饪'),('hobby', 'hobby_dance', '舞蹈瑜伽'),('hobby', 'hobby_fashion', '时尚美妆'),('hobby', 'hobby_health', '健康养生'),('hobby', 'hobby_diy', 'DIY手工'),('hobby', 'hobby_painting', '书法绘画'),('hobby', 'hobby_life_psychology', '生活心理'),('hobby', 'hobby_other', '其它'),('work_skill', 'work_skill_all', '全部'),('work_skill', 'work_skill_office', '办公技能'),('work_skill', 'work_skill_job', '求职应聘'),('work_skill', 'work_skill_vocation_test', '职业考试'),('work_skill', 'work_skill_marketing_promotion', '营销推广'),('work_skill', 'work_skill_investment', '财税投资'),('work_skill', 'work_skill_hr', '人力资源'),('work_skill', 'work_skill_bussiness_polic', '商务礼仪'),('work_skill', 'work_skill_communication', '谈判沟通'),('work_skill', 'work_skill_career_plane', '职业规划'),('work_skill', 'work_skill_manage', '管理能力'),('work_skill', 'work_skill_other', '其它'),('language', 'language_all', '全部'),('language', 'language_practise_english', '日常实用英语'),('language', 'language_abroad_english', '出国考试英语'),('language', 'language_english_exam', '国内应试英语'),('language', 'language_japanese', '日语'),('language', 'language_hanyu', '韩语'),('language', 'language_small_language', '小语种');
+
+拥有表中插入测试数据语句：
+insert into having_videos values('333', '0014625047290363e4626ff841e41eeba351286715c6749000', '12', '30%', '3');
+
+select having_videos.created_at, videos.id, name, dir_num, price  from having_videos, videos where having_videos.user_id = '00146173793590430c7bc4336cd4a058b70f3c9f8b40202000' and having_videos.video_id = videos.id;
+
+计划表中插入测试数据语句：
+insert into study_planes values('111', '0014625047290363e4626ff841e41eeba351286715c6749000', 'abc', 'abcdefg', 'ing', 0, 80, 0);
+
+消息表中插入测试数据语句：
+insert into messages values('11ee1', '0014625047290363e4626ff841e41eeba351286715c6749000', 'abeec', 'abeeecdefg', 80);
+
+子视频表中插入测试数据语句：
+insert into sub_video values('ff', '001463478381032af9147edc16a416aad36f5b32422730d000', 'bb', '../static/video/13750406862@163.com/1234/movie1.mp4', 3,33);
+
+
