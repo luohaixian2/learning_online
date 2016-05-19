@@ -24,7 +24,7 @@ class Video(Model):
     video_type = StringField(ddl='varchar(20)')
     sub_video_type = StringField(ddl='varchar(20)')
     pic_path = StringField(ddl='varchar(300)')
-    video_path = StringField(ddl='varchar(300)')
+    user_name = StringField(ddl='varchar(50)')
     describe = StringField(ddl='varchar(200)')
     user_id = StringField(ddl='varchar(50)')
     price = FloatField()
@@ -51,7 +51,7 @@ class Having_video(Model):
 	id = StringField(primary_key=True, default=next_id, ddl='varchar(50)')
 	user_id = StringField(ddl='varchar(50)')
 	video_id = StringField(ddl='varchar(50)')
-	video_progress = StringField(ddl='varchar(20)')
+	progress_num = StringField(ddl='int')
 	created_at = FloatField(default=time.time)
 
 class Collection_video(Model):
@@ -100,4 +100,13 @@ class Sub_video(Model):
 	title = StringField(ddl='varchar(50)')
 	video_path = StringField(ddl='varchar(300)')
 	num = StringField(ddl='int')
+	created_at = FloatField(default=time.time)
+
+class Video_comment(Model):
+	__table__ = 'video_comments'
+	
+	id = StringField(primary_key=True, default=next_id, ddl='varchar(50)')
+	video_id = StringField(ddl='varchar(50)')
+	content = StringField(ddl='varchar(100)')
+	user_id = StringField(ddl='varchar(50)')
 	created_at = FloatField(default=time.time)

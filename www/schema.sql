@@ -27,7 +27,7 @@ create table videos (
     `video_type` varchar(20) not null,
     `sub_video_type` varchar(20) not null,
     `pic_path` varchar(300) not null,
-    `video_path` varchar(300) not null,
+    `user_name` varchar(50) not null,
     `describe` varchar(200) not null,
     `user_id` varchar(50) not null,
     `price` double not null,
@@ -42,7 +42,6 @@ create table video_comments (
     `id` varchar(50) not null,
     `video_id` varchar(50) not null,
     `content` varchar(100) not null,
-    `path` varchar(500) not null,
     `user_id` varchar(50) not null,
     `created_at` real not null,
     primary key (`id`)
@@ -75,7 +74,7 @@ create table having_videos (
     `id` varchar(50) not null,
     `user_id` varchar(50) not null,
     `video_id` varchar(50) not null,
-    `video_progress` varchar(20) not null,
+    `progress_num` int not null,
     `created_at` real not null,
     primary key (`id`)
 ) engine=innodb default charset=utf8;

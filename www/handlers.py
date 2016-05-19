@@ -5,7 +5,7 @@ import re, time, json, logging, hashlib, base64, asyncio
 
 from web_frame import get, post
 
-from models import User, Video, Video_type_table, Sub_type, Having_video, Collection_video, Study_plane, Message, Advice, Sub_video, next_id
+from models import User, Video, Video_type_table, Sub_type, Having_video, Collection_video, Study_plane, Message, Advice, Sub_video, Video_comment, next_id
 
 from aiohttp import web
 
@@ -70,7 +70,7 @@ def index():
 
 @get('/api/videos')
 def api_videos():
-    free_videos = yield from Video.findAll(where="video_type='free'", orderBy='created_at desc', limit=(4))
+    free_videos = yield from Video.findAll(where="price=0", orderBy='created_at desc', limit=(4))
     it_videos = yield from Video.findAll(where="video_type='it'", orderBy='created_at desc', limit=(4))
     work_skill_videos = yield from Video.findAll(where="video_type='work_skill'", orderBy='created_at desc', limit=(4))
     language_videos = yield from Video.findAll(where="video_type='language'", orderBy='created_at desc', limit=(4))
@@ -123,7 +123,7 @@ def api_get_lesson(*, video_type, sub_video_type, page='1'):
 	#获取条数	
 	if video_type == 'all':
 		num = yield from Video.findNumber('count(*)')
-	elif sub_video_type == 'all':
+	elif sub_video_type.endswith('_all'):
 		num = yield from Video.findNumber('count(*)', where="video_type='"+video_type+"'")
 	else:
 		num = yield from Video.findNumber('count(*)', where="sub_video_type='"+sub_video_type+"'")
@@ -131,8 +131,8 @@ def api_get_lesson(*, video_type, sub_video_type, page='1'):
 	p = Page(num, page_index, 9)
 	if video_type == 'all':
 		videos = yield from Video.findAll(orderBy='created_at desc', limit=(p.offset, p.limit))
-	elif sub_video_type == 'all':
-		videos = yield from Video.findAll(where="video_type=video_type", orderBy='created_at desc', limit=(p.offset, p.limit))
+	elif sub_video_type.endswith('_all'):
+		videos = yield from Video.findAll(where="video_type='"+video_type+"'", orderBy='created_at desc', limit=(p.offset, p.limit))
 	else:
 		videos = yield from Video.findAll(where="sub_video_type='"+sub_video_type+"'", 
 		orderBy='created_at desc', limit=(p.offset, p.limit))
@@ -289,7 +289,6 @@ def personal_get_video_owe(*, user_id, page='1'):
 	for hav_video in hav_videos:
 		result = {}
 		result['created_at'] = hav_video.created_at
-		result['video_progress'] = hav_video.video_progress
 		print('TERSREE',hav_video.video_id)
 		video = yield from Video.findAll(where="id='"+hav_video.video_id+"'")
 		if video is not None:
@@ -297,6 +296,7 @@ def personal_get_video_owe(*, user_id, page='1'):
 			result['name'] = video[0].name
 			result['dir_num'] = video[0].dir_num
 			result['price'] = video[0].price
+			result['video_progress'] = str((hav_video.progress_num-1)/video[0].dir_num*100)+"%"
 			results.append(result)
 	return dict(videos=results, page = p)
 	
@@ -418,19 +418,46 @@ def personal_get_video_edit(*, video_id):
     }
 
 @get('/detail_lesson/{id}')
-def get_video(*, id):
+def get_video(request, *, id):
     video = yield from Video.find(id)
+    sub_videos = yield from Sub_video.findAll(where="parent_video_id='"+id+"'", orderBy="num")
+    user_video = yield from Having_video.findAll(where="user_id='"+request.__user__.id+"' and video_id='"+id+"'")
+    collection_video = yield from Collection_video.findAll(where="user_id='"+request.__user__.id+"' and video_id='"+id+"'")
+    comments = None
+    is_having = None
+    progress = None
+    collection_id = None
+    num = 0
+    if collection_video:
+        collection_id = collection_video[0].id
+    if user_video:
+        is_having = True
+        num = user_video[0].progress_num
+        progress = str((user_video[0].progress_num-1)/video.dir_num*100)
+        comments = yield from Video_comment.findAll(where="video_id='"+user_video[0].id+"'")
+    print(collection_id)
     return {
         '__template__': 'detail_lesson.html',
-        'video': video
+        'video': video,
+        'sub_videos' : sub_videos,
+        'progress' : progress,
+        'is_having' : is_having,
+        'comments' : comments,
+        'num' : num,
+        'collection_id' : collection_id
     }
 
-@get('/video/{id}')
-def video(*, id):
-	video = yield from Video.find(id);
+@get('/video/{id},{num}')
+def video(*, id, num):
+	sub_video = yield from Sub_video.findAll(where="parent_video_id='"+id+"' and num='"+num+"'");
+	if not sub_video:
+		return {
+			'__template__' : 'video.html',
+			'video' : None
+		}
 	return {
 	'__template__' : 'video.html',
-	'video' : video
+	'video' : sub_video[0]
 }
 
 @get('/test')
@@ -536,6 +563,26 @@ def authenticate(*, email, passwd):
 	r.body = json.dumps(user, ensure_ascii = False).encode('utf-8')
 	return r
 
+@post('/owe_video/{video_id}')
+def owe_video(request, *, video_id):
+	having_video =Having_video(user_id=request.__user__.id, video_id=video_id, progress_num=1)
+	yield from having_video.save()
+	return having_video
+
+@post('/collection_video/{video_id}')
+def collection_video(request, *, video_id):
+	collection_video =Collection_video(user_id=request.__user__.id, video_id=video_id)
+	yield from collection_video.save()
+	return collection_video
+
+@post('/cancel_collection_video/{collection_id}')
+def cancel_collection_video(*, collection_id):
+	collection_video = yield from Collection_video.find(collection_id)
+	print(collection_video)
+	if collection_video:
+		yield from collection_video.remove()
+	return dict(collection_id=collection_id)
+
 @post('/personal_collection_video/delete/{id}')
 def personal_collection_delete(*, id):
     video = yield from Collection_video.find(id)
@@ -617,14 +664,12 @@ def personal_post_video_create(request, *, name, video_type, sub_video_type, pri
         raise APIValueError('sub_video_type', 'sub_video_type cannot be empty.')
     if not describe or not describe.strip():
         raise APIValueError('describe', 'describe cannot be empty.')
-    video = Video(name=name.strip(), video_type=video_type.strip(), sub_video_type=sub_video_type.strip(), pic_path='null', video_path='null', describe=describe.strip(), user_id=request.__user__.id, price=price, dir_num=dir_num, people_num=0)
+    video = Video(name=name.strip(), video_type=video_type.strip(), sub_video_type=sub_video_type.strip(), pic_path='null', user_name=request.__user__.name, describe=describe.strip(), user_id=request.__user__.id, price=price, dir_num=dir_num, people_num=0)
     yield from video.save()
     #these code is not strong,should be use subprocess
     path = '../static/video/'+request.__user__.email+'/'+video.id+'/'
     pic_path = path + 'video_pic'
-    video_path = path + '1.mp4'
     video.pic_path = pic_path
-    video.video_path = video_path
     yield from video.update()
     os.chdir('/home/luohaixian/software/myproject/learning_online/www/templates')
     os.system('mkdir '+path)

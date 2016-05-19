@@ -4,6 +4,7 @@
 
 {% block script %}
 <script>
+var collection_id = '{{ collection_id }}';
 $(function(){
 	var vm = new Vue({
 		el: '#vm',
@@ -11,15 +12,58 @@ $(function(){
 		
 		},
 		methods: {
-		
+			owe_video: function() {
+				alert("准备参与");
+				postJSON('/owe_video/{{ video.id }}', function (err, r) {
+                        		if (err) {
+                            			return alert(err.message || err.error || err);
+                        		}
+					alert("拥有成功");
+					location.assign('/detail_lesson/{{ video.id }}');
+                    		});
+			},	
+			collection_video: function() {
+				alert("准备收藏");
+				postJSON('/collection_video/{{ video.id }}', function (err, r) {
+                        		if (err) {
+                            			return alert(err.message || err.error || err);
+                        		}
+					alert("收藏成功");
+					collection_id = r.id;
+					$('#collection').hide();
+					$('#cancel_collection').show();
+                    		});
+			},	
+			cancel_collection_video: function() {
+				alert("准备取消收藏");
+				postJSON('/cancel_collection_video/'+collection_id, function (err, r) {
+                        		if (err) {
+                            			return alert(err.message || err.error || err);
+                        		}
+					alert("取消收藏成功");
+					collection_id = null;
+					$('#collection').show();
+					$('#cancel_collection').hide();
+                    		});
+			}	
 		}
 	});
+	if(collection_id != "None") {
+		$('#collection').hide();
+	}
+	else {
+		$('#cancel_collection').hide();
+	}
 })	
 </script>
 {% endblock %}
 
 {% block style %}
 <style type="text/css">
+body {
+	background-color:#EBEBEB;
+}
+
 .ul3_class {
         margin:0px;
         padding:0px;
@@ -35,67 +79,83 @@ $(function(){
 .ul3_class li:hover {
         color:green;
 }
+
+.padding_top_small {
+	padding-top:30px;
+}
+
+.tongyi_color {
+	background-color:#FFFFFF;
+	padding:8px;
+}
 </style>
 {% endblock %}
 
 {% block content %}
-	<div id="vm">
-		<div class="uk-grid" data-uk-grid-match="{row: false}" style="border:1px solid #DDDDDD">
-			<div class="uk-width-1-2">
-				<img class="uk-width-1-1" src={{video.pic_path}}>
+	<div id="vm" style="">
+		<div class="uk-grid tongyi_color" style="margin:0px;">
+			<div>
+				<img style="width:450px;height:250px;margin:20px" src={{video.pic_path}}>
 			</div>
-			<div class="uk-width-1-2">
-				<div class="">{{video.name}}</div>
-				<div class=""><i class="uk-icon-user"></i> {{video.people_num}}</div>
-				<div class="">{{video.user_id}}</div>
-				<div class="">${{video.price}}</div>
+			<div style="margin-top:20px">
 				<div class="">
-					<button class="uk-button-primary">立即参加</button>
+					<span style="font-size:20px">{{video.name}}</span>
+	
+					<span id="collection"  style="margin-left:10px;"><a href="#0"title="收藏" 
+					v-on="click: collection_video()"><i class="uk-icon-star-o"></i></a></span>
+					<span id="cancel_collection" style="margin-left:10px;"><a href="#0"title="取消收藏" 
+					v-on="click: cancel_collection_video()"><i class="uk-icon-star"></i></a></span>
+				</div>
+				<div class="padding_top_small"><i class="uk-icon-user"></i>学习人数：{{video.people_num}}</div>
+				<div class="padding_top_small">讲师：{{video.user_name}}</div>
+				<div class="padding_top_small">价钱：${{video.price}}</div>
+				<div style="" class="padding_top_small">
+					{% if is_having %}
+						<span>学习进度:{{ progress }}%</span>
+						<a href="/video/{{ video.id }},{{ num }}" class="uk-button uk-button-primary">继续学习</a>
+					{% else %}
+						<button v-on="click: owe_video()" class="uk-button uk-button-primary">立即参加</button>
+					{% endif %}
 				</div>
 			</div>
-		</div>
-		
-		<div align:"left" style="border:1px solid #DDDDDD;margin-top:30px;margin-bottom:30px;line-height:100px">
-			<span>完成进度:30%</span>
-			<span  style="float:right;text-align-center">
-				<a href="/video/{{video.id}}">开始学习</a>
-			</span>
 		</div>
 
 		<div class="uk-grid">
-			<div class="uk-width-2-3">
-				<div style="border:1px solid #DDDDDD">
-					<h3>简介:<h3>
+			<div class="uk-width-6-10">
+				<div class="tongyi_color">
+					<h3>简介:</h3>
+					<hr />
 					<span>
-					这里有60多份简历的样本的深入分析，有多位Offer大神的智慧结晶。讲解了标准美式简历的撰写规范和学生经历的挖掘，并融入找实习、找工作的技巧精华。只要2小时，给你一份战无不胜的求职简历！课程PPT和文中使用的简历模板Word版在附件中可直接下载哦~
+						{{ video.describe }}
 					<span>
 				</div>
-				<div style="border:1px solid #DDDDDD; margin-top:20px;">
+				<div class="tongyi_color" style="margin-top:20px;">
 					<h3>目录</h3>
+					<hr />
 					<ul class="ul3_class">
-						<li>课时1<li>
-						<li>课时2<li>
-						<li>课时3<li>
-						<li>课时4<li>
-						<li>课时5<li>
+						{% for sub_video in sub_videos  %}
+							<li><a href="/video/{{ video.id }},{{ sub_video.num }}">
+							第{{ sub_video.num }}节：{{ sub_video.title }}</a></li>
+						{% endfor %}
 					</ul>
 				</div>
 			</div>
-			<div class="uk-width-1-3">
-				<div style="border:1px solid #DDDDDD">
-					<h3>评价</h3>
+			<div class="uk-width-4-10">
+				<div class="tongyi_color">
+					<h3>最新评价</h3>
+					<hr />
 					<ul class="ul3_class">
-						<li>感觉还不错啊<li>
-						<li>感觉还不错啊<li>
-						<li>感觉还不错啊<li>
-						<li>感觉还不错啊<li>
-						<li>感觉还不错啊<li>
-						<li>感觉还不错啊<li>
-						<li>查看更多<li>
+						{% if comment %}
+							{% for comment in comments %}
+								<li>comment.content</li>
+							{% endfor %}
+						{% else %}
+							<li>暂无评论</li>
+						{% endif %}
 					</ul>
-				</div>
+				</div><!--
 				<div style="border:1px solid #DDDDDD;margin-top:20px">
-					<h3>122人也在学这个课程</h3>
+					<h3>人也在学这个课程</h3>
 					<div class="uk-grid" style="margin-left:0px">
                                 		<a class="uk-thumbnail uk-width-1-4" href="">
                                 		<img src="../static/src/test.png" alt="">
@@ -121,21 +181,8 @@ $(function(){
                                         	<div class="font_price">小星</div>
 						</div>
 						</a>
-                                		<a class="uk-thumbnail uk-width-1-4" href="">
-                                		<img src="../static/src/test.png" alt="">
-                                		<div class="uk-thumbnail-caption" style="text-align:left">
-                                        	<div class="font_price">小星</div>
-						</div>
-						</a>
-                                		<a class="uk-thumbnail uk-width-1-4" href="">
-                                		<img src="../static/src/test.png" alt="">
-                                		<div class="uk-thumbnail-caption" style="text-align:left">
-                                        	<div class="font_price">小星</div>
-						</div>
-						</a>
 					</div>
-                                </div>
-				<div>
+                                </div>-->
 			</div>
 		</div>
 	</div>
