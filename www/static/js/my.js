@@ -328,7 +328,6 @@ function _httpJSON(method, url, data, callback) {
 }
 
 function getJSON(url, data, callback) {
-    //alert('get');
     if (arguments.length===2) {
         callback = data;
         data = {};
@@ -344,7 +343,6 @@ function getJSON(url, data, callback) {
 }
 
 function postJSON(url, data, callback) {
-    alert('post');
     if (arguments.length===2) {
         callback = data;
         data = {};

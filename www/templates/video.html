@@ -1,61 +1,185 @@
-{% extends '__home_base__.html' %}
+<html>
+<head>
+<meta charset="utf-8">
+<title>视频观看学习</title>
+<link rel="stylesheet" href="../static/css/uikit.min.css">
+<link rel="stylesheet" href="../static/css/uikit.gradient.min.css">
+<link rel="stylesheet" href="../static/css/my.css">
+<script src="../static/js/jquery.min.js"></script>
+<script src="../static/js/sha1.min.js"></script>
+<script src="../static/js/uikit.min.js"></script>
+<script src="../static/js/sticky.min.js"></script>
+<script src="../static/js/vue.min.js"></script>
+<script src="../static/js/my.js"></script>
+<style type="text/css">
+.video_background {
+	background-color:gray;
+}
 
-{% block title %}教程学习{% endblock %}
+.margin_left {
+	margin-left:150px;
+}
 
-{% block script%}{% endblock %}
+.ul3_class {
+        margin:0px;
+        padding:0px;
+}
 
-{% block style %}{% endblock %}
+.ul3_class li {
+        line-height:35px;
+        text-align:left;
+        list-style-type:none;
+        font-size:13px;
+}
 
-{% block content %}
-<div class="uk-grid" style="height:100%;">
-	<div class="uk-width-3-4 test_board">
-		<!--
-		<object data="http://player.ku6.com/inside/Ub-puj5aU5byqEIy1bE-NA../v.swf&amp;adss=0" 
-		id="videoPlayer" type="application/x-shockwave-flash" width="100%" height="100%">
-			<param value="transparent" name="wmode">
-			<param value="always" name="allowScriptAccess">
-			<param value="true" name="allowFullScreen">
-			<param value="adss=0" name="flashvars">
-		</object>
-		-->
-	<video width="100%" height="100%" controls="controls">  
-        	<source src={{video.video_path}} type="video/mp4" >{{video.name}}</source>  
-        	<!--<source src="../static/vedio/movie2.ogg" type="video/ogg" >示例视频2</source>-->  
-        	您的浏览器不支持video标签  
-    	</video>
+.ul3_class li a {
+	color:#FFFFFF;
+}
 
+.ul3_class li:hover {
+        background-color:#C0C0C0;
+}
 
-<!--
-<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" WIDTH="550" HEIGHT="400" id="myMovieName">
-	<param NAME=movie VALUE="../vedio/vedio/movie.mp4">
-	<param NAME=quality VALUE=high>
-	<param NAME=bgcolor VALUE=#FFFFFF>
-	<embed src="http://www.doflash.net/"/support/flash/ts/documents/myFlashMovie.swf quality=high bgcolor=#FFFFFF WIDTH="550" HEIGHT="400	       " NAME="myMovieName" ALIGN="" TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/go/getflashplayer">
-	</embed>
-</object>
--->
+.ul4_class {
+        margin:0px;
+        padding:0px;
+}
+
+.ul4_class li {
+        line-height:20px;
+        text-align:left;
+        list-style-type:none;
+        font-size:13px;
+}
+</style>
+
+<script>
+$(function() {
+	//alert('haha');
+	var vm = new Vue({
+		el: '#vm',
+		data: {
+
+		},
+		methods: {
+			submit_comment: function() {
+				postJSON('/submit_comment/{{ sub_video.id }}',{'content': $('#content').val()}, function (err, r) {
+                                        if (err) {
+                                                return alert(err.message || err.error || err);
+                                        }
+                                        alert("评论成功");
+                                });
+                        },  
+			pre_video: function() {
+				postJSON('/pre_video/{{ video.id }},{{ sub_video.num }}', function (err, r) {
+                                        if (err) {
+                                                return alert(err.message || err.error || err);
+                                        }
+					var num = parseInt('{{ sub_video.num }}') - 1;
+                                        location.assign('/video/{{ video.id }},'+num);
+                                });
+                        },  
+			next_video: function() {
+				postJSON('/next_video/{{ video.id }},{{ sub_video.num }},{{ video.dir_num }}', function (err, r) {
+                                        if (err) {
+                                                return alert(err.message || err.error || err);
+                                        }
+					var num = parseInt('{{ sub_video.num }}') + 1;
+                                        location.assign('/video/{{ video.id }},'+num);
+                                });
+                        },  
+		}
+	});
+})
+</script>
+</head>
+<body>
+<div id="vm" class="uk-grid uk-grid-collapse" style="height:100%;">
+	<div class="uk-width-4-5 video_background">
+		<div style="margin:20px;">
+			<video width="100%" controls="controls">  
+        			<source src={{sub_video.video_path}} type="video/mp4" >{{sub_video.title}}</source>  
+        			<!--<source src="../static/vedio/movie2.ogg" type="video/ogg" >示例视频2</source>-->  
+        			您的浏览器不支持video标签  
+    			</video>
+		</div>
+		
+		<div style="text-align:center">
+			<a href="/" class="uk-button uk-button-primary margin_left"><i class="uk-icon-home"></i>返回主页面</a>
+			<a v-on="click: pre_video()" class="uk-button uk-button-success margin_left">
+			<i class="uk-icon-angle-double-left"></i>上一节</a>
+			<a v-on="click: next_video()" class="uk-button uk-button-success margin_left">
+			<i class="uk-icon-angle-double-right"></i>下一节</a>
+			<a  v-on="click: next_video()" class="uk-button uk-button-success margin_left"><i class="uk-icon-check"></i>学完了</a>
+		</div>
+
 	</div>
-	<div class="uk-width-1-4 test_board">
-		<div>一些简介</div>
-		<div>
-			<ul class="uk-breadcrumb">
-                                        <li class="uk-active"><a href="">讨论</a></li>
-                                        <li><a href="">目录</a></li>
-                                        <li><a href="">笔记</a></li>
-                        </ul>
-			<div>
-				<input />
-				<button>发起评论</button>
+	<div class="uk-width-1-5 video_background" style="padding-top:20px">
+		<div style="color:#FFFFFF">
+			<p>
+			《{{ video.name }}》第{{ sub_video.num }}节{{ sub_video.title}}
+			</p>
+			<p>
+			发布者：{{ video.user_name }}
+			</p>
+		</div>
+		<hr />
+		<div style="color:#FFFFFF">
+			<!--
+			<div class="uk-grid" style="text-align:center">
+				<div class="uk-width-1-2"><a class="uk-button uk-button-primary">讨论</a></div>
+				<div class="uk-width-1-2"><a class="uk-button uk-button-primary">目录</a></div>
 			</div>
-                        <ul class="ul2_class">
-                        	<li>
-					<div>头像    4月9号</div>
-					<div>老师讲的很细致，非常感谢</div>
-				</li>
-                                <li>更多<i class="uk-icon-chevron-right"></i></li>
-                        </ul>
-
+			<hr />
+			-->
+			<div>
+				<p>目录</p>
+				<div>
+					<ul class="ul3_class">
+                                                {% for catalog in sub_videos  %}
+                                                        <li><a href="/video/{{ video.id }},{{ catalog.num }}">
+                                                        第{{ catalog.num }}节：{{ catalog.title }}</a></li>
+                                                {% endfor %}
+                                        </ul>	
+				</div>	
+			</div>
+			<hr />
+			<div id="discuss">
+				<div>
+					<p>评论区</p>
+					<div style="text-align:right">
+						<textarea id='content' class="uk-width-1-1" style="height:70px"></textarea>
+						<a v-on="click: submit_comment()" class="uk-button uk-button-success">提交评论</a>
+					</div>
+				</div>
+				<div>
+                        		<ul class="ul4_class">
+					{% if comments %}
+						{% for comment in comments %}
+                        				<li>
+								<div>{{ comment.user_name}} {{ comment.created_at|datetime }}</div>
+								<div>{{ comment.content }}</div>
+								<hr />
+							</li>
+						{% endfor %}
+					{% else %}
+						<li>暂无评论<li>
+					{% endif %}
+                        		</ul>
+				</div>
+			</div>
 		</div>
 	</div>
 <div>
-{% endblock %}
+<!--
+<video width="320" height="240" controls>
+ 兼容 Firefox
+<source src="http://www.jb51.net/ movie.ogg" type="video/ogg" />
+ 兼容 Safari/Chrome
+<source src="http://www.jb51.net/ movie.mp4" type="video/mp4" />
+如果浏览器不支持video标签，则使用flash
+<embed src="http://www.jb51.net/ movie.swf" type="application/x-shockwave-flash"
+width="320" height="240" allowscriptaccess="always" allowfullscreen="true"></embed>
+</video> 
+-->
+</body>

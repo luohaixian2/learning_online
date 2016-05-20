@@ -43,6 +43,7 @@ create table video_comments (
     `video_id` varchar(50) not null,
     `content` varchar(100) not null,
     `user_id` varchar(50) not null,
+    `user_name` varchar(50) not null,
     `created_at` real not null,
     primary key (`id`)
 ) engine=innodb default charset=utf8;

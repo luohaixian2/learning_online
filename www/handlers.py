@@ -333,7 +333,7 @@ def personal_get_study_plane(*, user_id, page='1'):
 def personal_get_sub_video(*, parent_video_id, page='1'):
 	page_index = get_page_index(page)
 	num = yield from Sub_video.findNumber('count(*)', where="parent_video_id='"+parent_video_id+"'")
-	p = Page(num, page_index, 1)
+	p = Page(num, page_index, 10)
 	sub_videos = yield from Sub_video.findAll(where="parent_video_id='"+parent_video_id+"'", orderBy="num", 
 	limit=(p.offset, p.limit))
 	return dict(sub_videos=sub_videos, page=p)
@@ -449,15 +449,21 @@ def get_video(request, *, id):
 
 @get('/video/{id},{num}')
 def video(*, id, num):
-	sub_video = yield from Sub_video.findAll(where="parent_video_id='"+id+"' and num='"+num+"'");
+	sub_video = yield from Sub_video.findAll(where="parent_video_id='"+id+"' and num='"+num+"'")
+	sub_videos = yield from Sub_video.findAll(where="parent_video_id='"+id+"'")
+	video = yield from Video.find(id)
 	if not sub_video:
 		return {
 			'__template__' : 'video.html',
 			'video' : None
 		}
+	comments = yield from Video_comment.findAll(where="video_id='"+sub_video[0].id+"'")
 	return {
 	'__template__' : 'video.html',
-	'video' : sub_video[0]
+	'sub_video' : sub_video[0],
+	'sub_videos' : sub_videos,
+	'comments' : comments,
+	'video' : video
 }
 
 @get('/test')
@@ -568,6 +574,37 @@ def owe_video(request, *, video_id):
 	having_video =Having_video(user_id=request.__user__.id, video_id=video_id, progress_num=1)
 	yield from having_video.save()
 	return having_video
+
+@post('/submit_comment/{sub_video_id}')
+def submit_comment(request, *, sub_video_id, content):
+	if not content or not content.strip():
+		raise APIValueError('content')
+	video_comment =Video_comment(video_id=sub_video_id, content=content, user_id=request.__user__.id, user_name=request.__user__.name)
+	yield from video_comment.save()
+	return video_comment
+
+@post('/pre_video/{video_id},{num}')
+def pre_video(request, *, video_id, num):
+	num = int(num)
+	if not num or num <= 1:
+		raise APIValueError('num')
+	having_video = yield from Having_video.findAll(where="user_id='"+request.__user__.id+"' and video_id='"+video_id+"'")
+	if having_video:
+		having_video[0].progress_num = num - 1
+		yield from having_video[0].update()
+		return having_video[0]
+
+@post('/next_video/{video_id},{num},{all_num}')
+def next_video(request, *, video_id, num, all_num):
+	num = int(num)
+	all_num = int(all_num)
+	if not num or num >= all_num:
+		raise APIValueError('num')
+	having_video = yield from Having_video.findAll(where="user_id='"+request.__user__.id+"' and video_id='"+video_id+"'")
+	if having_video:
+		having_video[0].progress_num = (num + 1)
+		yield from having_video[0].update()
+		return having_video[0]
 
 @post('/collection_video/{video_id}')
 def collection_video(request, *, video_id):

@@ -109,4 +109,5 @@ class Video_comment(Model):
 	video_id = StringField(ddl='varchar(50)')
 	content = StringField(ddl='varchar(100)')
 	user_id = StringField(ddl='varchar(50)')
+	user_name = StringField(ddl='varchar(50)')
 	created_at = FloatField(default=time.time)

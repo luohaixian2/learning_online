@@ -3,7 +3,7 @@ jQuery-File-Upload插件
 如果只是传递单个文件，那么将数据流POST给服务器端即可
 http multipart
 
-把having_video的video_progress改成num,直接记录第几节，
+向video_comment增加个字段　user_name
 
 videos表中插入测试语句：
 insert into videos values('12ee', 'dd', 'it', 'c', '../static/video/13750406862@163.com/1234/test.png', '../static/video/13750406862@163.com/1234/movie1.mp4', 'that is good', '1233', 0, 22, 2, 30);
